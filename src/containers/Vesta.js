@@ -5,11 +5,11 @@ import {device} from "../screenSizes";
 import routerStore from "../stores/router.store"
 import SpActionBox from "../components/stability-pool/SpActionBox"
 import Navbar from "../components/stability-pool/Navbar"
-import hundredStore from "../stores/hundred.store"
+import vestaStore from "../stores/vesta.store"
 import VestaInfoPage from "../components/vesta/VestaInfoPage"
 import userStore from "../stores/user.store"
 
-class Hundred extends Component {
+class Vesta extends Component {
 
   constructor(props) {
     super(props);
@@ -41,7 +41,7 @@ class Hundred extends Component {
         {!showInfoPage && <div>
           <Navbar/>
           <div className="container">
-            {hundredStore.stabilityPools.map((sp, i)=> <SpActionBox key={i} store={sp}/>)}
+            {vestaStore.stabilityPools.map((sp, i)=> <SpActionBox key={i} store={sp}/>)}
           </div>
         </div>}
         {showInfoPage && <VestaInfoPage/>}
@@ -50,4 +50,4 @@ class Hundred extends Component {
   }
 }
 
-export default observer(Hundred)
+export default observer(Vesta)

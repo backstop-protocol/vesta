@@ -2,8 +2,8 @@
  * @format
  */
 import { makeAutoObservable, runInAction, computed } from "mobx"
-import {getPools} from "../lib/hundred/config"
-import * as Interface from "../lib/hundred/interface"
+import {getPools} from "../lib/vesta/config"
+import * as Interface from "../lib/vesta/interface"
 import userStore from "./user.store"
 import { ApiAction } from "../lib/ApiHelper"
 import Web3 from "web3"
@@ -300,7 +300,7 @@ class PoolStore {
 
 }
 
-class HundredStore {
+class VestaStore {
   stabilityPools = []
 
   constructor() {
@@ -321,4 +321,4 @@ class HundredStore {
   }
 }
 
-export default new HundredStore()
+export default new VestaStore()

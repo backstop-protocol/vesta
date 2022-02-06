@@ -6,7 +6,7 @@ import { runInAction, makeAutoObservable } from "mobx"
 import routerStore from "./router.store"
 import EventBus from "../lib/EventBus"
 import Web3 from "web3"
-import hundredStore from "./hundred.store"
+import vestaStore from "./vesta.store"
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import {walletTypes, getMetaMask, getWalletConnect} from "../wallets/Wallets"
 import WalletSelectionModal from "../components/modals/WalletSelectionModal"
@@ -148,7 +148,7 @@ class UserStore {
             this.loggedIn = true
             this.displayConnect = false
         })
-        hundredStore.onUserConnect()
+        vestaStore.onUserConnect()
     }
 
     showConnect = () => {
