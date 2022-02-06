@@ -15,7 +15,6 @@ const browserHistory = createBrowserHistory();
 routerStore.setRouteProps(browserHistory)
 
 const Hundred = React.lazy(() => import("./containers/Hundred"));
-const TermsOfUse = React.lazy(() => import("./containers/Terms"));
 
 function renderPage (props, PageComponent) {
   return (
@@ -42,8 +41,6 @@ const App = observer(() => {
           {/* Default route */}
             <Route exact path="/" render={props =>(renderPage(props, Hundred))} />
             <Route exact path="/vesta-app" render={props =>(renderPage(props, Hundred))} />
-            <Route exact path="/terms" render={props =>(renderPage(props, TermsOfUse))} />
-
         </Router>
     </div>
   );

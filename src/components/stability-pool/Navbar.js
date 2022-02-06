@@ -10,6 +10,7 @@ import {Close} from "../../components/style-components/Buttons"
 import {walletTypes} from "../../wallets/Wallets"
 import ConnectButton from "./ConnectButton"
 import TermsButton from "./TermsButton"
+import {isMobile} from "../../screenSizes";
 
 class Navbar extends Component {
 
@@ -20,6 +21,7 @@ class Navbar extends Component {
 
   render() {
     const { loggedIn, user, connecting } = userStore
+    const onMobile = isMobile()
     let btnText = ""
     if(user){
       btnText = user
@@ -40,10 +42,10 @@ class Navbar extends Component {
             </ul>
             <ul>
               <li>
-                <TermsButton/>
-              </li>
-              <li>
-                <ConnectButton/>
+                <Flex alignCenter columnReverse={onMobile}>
+                  <TermsButton/>
+                  <ConnectButton/>
+                </Flex>
               </li>
             </ul>
           </nav>
