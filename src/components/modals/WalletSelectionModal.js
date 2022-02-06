@@ -2,7 +2,7 @@ import React, {Component} from "react"
 import {observer} from "mobx-react"
 import styled from "styled-components"
 import EventBus from "../../lib/EventBus"
-import Flex, {FlexItem} from "styled-flex-component"
+import Flex from "styled-flex-component"
 import {device} from "../../screenSizes"
 import {walletTypes} from "../../wallets/Wallets"
 import userStore from "../../stores/user.store"
@@ -69,10 +69,6 @@ const Text = styled.span`
   font-style: normal;
   line-height: normal;
   color: #0b0412;
-`
-
-const WalletIcon = styled.img`
-  height: 100%;
 `
 
 class WalletSelectionModal extends Component {
