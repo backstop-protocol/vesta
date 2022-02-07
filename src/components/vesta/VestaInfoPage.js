@@ -208,7 +208,7 @@ const ConnectContainer = styled.div`
   box-sizing: border-box;
   min-width: 0px;
   -webkit-box-pack: center;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   flex-direction: column;
   display: flex;
@@ -217,9 +217,11 @@ const ConnectContainer = styled.div`
   
   @media screen and (min-width: 300px){
     margin-left: calc(50% - 100px);
+    min-height: 90px;
   }
   @media screen and (min-width: 700px){
     margin-left: 85px;
+    min-height: 100px;
   }
   @media screen and (min-width: 1000px){
     margin-left: 95px;

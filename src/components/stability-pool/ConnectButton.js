@@ -56,13 +56,12 @@ class ConnectButton extends Component {
           id="connect-button"
           onClick={()=>window.toggleModal("wallet-select-modal")}
           style={{
-            width: "100%",
-            maxWidth: onMobile ? "150px" : "200px",
+            width: onMobile ? "150px" : "200px",
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",
             marginBottom: "0",
-            marginLeft: onMobile ? "0" : "15px"
+            //marginLeft: onMobile ? "0" : "15px"
           }}
           aria-busy={connecting} 
           className="contrast outline">

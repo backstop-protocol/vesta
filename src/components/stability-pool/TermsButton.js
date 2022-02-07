@@ -25,7 +25,7 @@ class TermsButton extends Component {
           </article>
           </div>
         </dialog>
-        <a className="secondary"
+        <a className="secondary" style={{margin: "0 10px"}}
           onClick={()=>window.toggleModal("terms-modal")}>
           Terms of service
         </a>

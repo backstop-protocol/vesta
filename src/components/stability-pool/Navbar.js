@@ -35,8 +35,8 @@ class Navbar extends Component {
       <div>
         <div className="container">
           <nav>
-            <ul>
-              <li>        
+            <ul style={{width: "50%", maxWidth: "220px"}}>
+              <li> 
                 <Logo />
               </li>
             </ul>
