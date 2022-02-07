@@ -1,13 +1,7 @@
 import React, { Component } from "react";
 import {observer} from "mobx-react"
-import Flex, {FlexItem} from "styled-flex-component"
-import styled from "styled-components"
-import { makeAutoObservable, runInAction, observable} from "mobx"
-import Logo from "./Logo";
-import userStore from "../../stores/user.store"
 import TermsOfUseContent from "../../components/TermsOfUseContent"
 import {Close} from "../../components/style-components/Buttons"
-import {walletTypes} from "../../wallets/Wallets"
 
 class TermsButton extends Component {
 
