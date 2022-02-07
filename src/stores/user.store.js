@@ -6,7 +6,6 @@ import { runInAction, makeAutoObservable } from "mobx"
 import EventBus from "../lib/EventBus"
 import vestaStore from "./vesta.store"
 import {walletTypes, getMetaMask, getWalletConnect} from "../wallets/Wallets"
-import WalletSelectionModal from "../components/modals/WalletSelectionModal"
 
 const chainIdMap = {
     1: "mainnet",
@@ -57,23 +56,6 @@ class UserStore {
         if(!walletType) return
         this.walletType = walletType
         this.connect()
-    }
-
-    _selectWallet = async () => {
-        return new Promise((resolve, reject) =>{
-            this.walletSelectionResult = null
-            const noWrapper = true
-            EventBus.$emit('show-modal', <WalletSelectionModal/>, noWrapper);
-            EventBus.$on('close-modal', ()=>{
-                if(this.walletSelectionResult){
-                    this.walletType = this.walletSelectionResult
-                    resolve()
-                } else {
-                    reject(new Error("no wallet selection"))
-                }
-            })
-        })
-
     }
 
     handleAccountsChanged = async (accounts) => {
