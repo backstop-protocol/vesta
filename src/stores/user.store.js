@@ -120,8 +120,8 @@ class UserStore {
                     return "or " + n
                 }
                 return n + " "
-            })
-            EventBus.$emit("app-error", `${chainIdMap[networkType]} network is not supported, please switch to ${supported}`);
+            }).join("")
+            EventBus.$emit("app-error", `${chainIdMap[networkType]} network is not supported. please switch to ${supported}`);
             return false;
         }
         runInAction(()=> {
