@@ -11,21 +11,24 @@ const chainIdMap = {
     1: "mainnet",
     42: "kovan",
     250: "fantom",
-    421611: "Arbitrum Testnet"
+    421611: "Arbitrum Testnet",
+    42161: "Arbitrum One"
 }
 
 const supportedChainsMap = {
     // 1: "mainnet",
     // 42: "kovan",
     // 250: "fantom",
-    421611: "Arbitrum Testnet"
+    421611: "Arbitrum Testnet",
+    42161: "Arbitrum One"
 }
 
 const networkScannerMap = {
     "mainnet": "etherscan.io",
     "kovan": "kovan.etherscan.io",
     "fantom": "ftmscan.com",
-    "Arbitrum Testnet": "testnet.arbiscan.io/"
+    "Arbitrum Testnet": "testnet.arbiscan.io",
+    "Arbitrum One": "arbiscan.io"
 }
 
 class UserStore {
