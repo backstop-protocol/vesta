@@ -116,10 +116,10 @@ const SpFooterContent = observer((props) => {
               <small> {usdPercnet}% in <strong>{asset}</strong></small> <br/>
               $<ANS val={withdrawValues.usd} decimals={4}/>
             </p>
-            <p>
+            {collPercnet != "0.00" && <p>
               <small> {collPercnet}% in collateral ({collaterals.map(coll => <strong>{coll.symbol} </strong>)})</small> <br/>
               $<ANS val={withdrawValues.coll} decimals={4}/><br/>
-            </p>
+            </p>}
           </div>
         </div>}
     </div>
@@ -273,7 +273,8 @@ class SpActionBox extends Component {
           </Flex>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
             <div>{"TBD"}%</div>
-            <small>APY</small>
+            <small data-tooltip={`APR is the same as 
+            Vestafinance.xyz`}>APR</small>
           </Flex>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
             <div>
@@ -284,10 +285,10 @@ class SpActionBox extends Component {
               {!reward && <span>Reward</span>}
             </small>
           </Flex>
-          <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
+          {/* <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
             <div>$<ANS val={tvl} decimals={2}/></div>
             <small>TVL</small>
-          </Flex>
+          </Flex> */}
           <Flex column alignCenter justifyCenter style={{padding: "0 var(--spacing)", minHeight: "calc(var(--font-size) * 4.5)"}}>
             <a onClick={()=>openFooter("Deposit")}>Deposit</a>
             <a onClick={()=>openFooter("Withdraw")}>Withdraw</a>
