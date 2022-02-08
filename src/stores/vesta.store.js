@@ -9,6 +9,14 @@ import { ApiAction } from "../lib/ApiHelper"
 import Web3 from "web3"
 const {toBN} = Web3.utils
 
+export const stringToFixed = (string, numbersAfterTheDeciamlPoint) => {
+  const decimalPointIndex = string.indexOf(".")
+  if(decimalPointIndex === -1){
+      return string
+  }
+  return string.slice(0, decimalPointIndex + numbersAfterTheDeciamlPoint)
+}
+
 const reallyLargeAllowance = toBN("8888888888888888888888888888888888888888888888888888888888888888", 16)
 const wait = (seconds) => new Promise(resolve => setTimeout(resolve, seconds * 1000))
 let vestaStore;
@@ -289,10 +297,10 @@ class PoolStore {
       
       const uiUpdate = () => {
         runInAction(()=> {
-          this.walletBalance = Interface.normlize(walletBalance, this.decimals)
+          this.walletBalance = stringToFixed(Interface.normlize(walletBalance, this.decimals), 5)
           this.tvl = Interface.normlize(tvl, this.decimals)
           this.allowance = allowance
-          this.userShareInUsd = Interface.normlize(userShareInUsd, this.decimals)
+          this.userShareInUsd = stringToFixed(Interface.normlize(userShareInUsd, this.decimals), 5)
           this.collateralRatio = collRatio
           this.usdRatio = usdRatio
           this.collaterals.replace(collaterals)
