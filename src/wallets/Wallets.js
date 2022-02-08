@@ -1,7 +1,6 @@
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import Web3 from "web3"
 import EventBus from "../lib/EventBus"
-import {BP_API, KOVAN_BP_API} from "../common/constants"
 import { isAndroid, isIOS } from "react-device-detect";
 import detectEthereumProvider from '@metamask/detect-provider'
 
@@ -13,7 +12,6 @@ import detectEthereumProvider from '@metamask/detect-provider'
  *   connectFn: a function that connects and retruns the user account public key
  *
  */
-
 export const getMetaMask = async () => {
   const provider = window.ethereum || await detectEthereumProvider()
   if (!provider) {
@@ -62,8 +60,8 @@ export const getWalletConnect = (newConnection) => {
   const provider = new WalletConnectProvider({
       // indexd by chain ID
       rpc: {
-          1: BP_API,
-          42: KOVAN_BP_API
+          42161: "https://arb1.arbitrum.io/rpc",
+          421611: "https://rinkeby.arbitrum.io/rpc"
           // ...
       }
   })
