@@ -10,6 +10,7 @@ import VIcon from "../../assets/v-icon.svg";
 import XIcon from "../../assets/red-x-icon.svg";
 import ANS from "../style-components/AnimateNumericalString"
 import {Close} from "../style-components/Buttons"
+import TooltipIcon from "../style-components/TooltipIcon"
 import {isMobile} from "../../screenSizes";
 
 const MainAssetIcon = styled.div`
@@ -273,8 +274,7 @@ class SpActionBox extends Component {
           </Flex>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
             <div>{"TBD"}%</div>
-            <small data-tooltip={`APR is the same as 
-            Vestafinance.xyz`}>APR</small>
+            <div><small> APR</small> <TooltipIcon text={"APR is the same as on Vestafinance.xyz"} /></div>
           </Flex>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
             <div>
