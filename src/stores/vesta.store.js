@@ -320,7 +320,7 @@ class VestaStore {
   refreshStores = async (excludedPoolAddress) => {
     for (const pool of this.stabilityPools){
       if(pool.config && pool.config.poolAddress === excludedPoolAddress) {
-        return
+        continue
       }
       await pool.fetchData()
     }
