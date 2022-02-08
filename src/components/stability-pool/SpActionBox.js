@@ -85,6 +85,7 @@ const SpFooterContent = observer((props) => {
   const {footerIsOpen, txInProgress, action, err, inputErrMsg, inputIsValid, inputIsInvalid, hash, walletBalance, closeFooter, asset, onInputChange, val, collaterals, withdrawValues} = props.store
   const {grantAllowance, hasAllowance, allowanceInProgress, collPercnet, usdPercnet } = props.store
   let doAction = action === "Deposit" ? props.store.deposit : props.store.withdraw
+  const singleWithdrawValue = parseFloat(collPercnet) < 0.01
   return (
     <div>
       <Close onClick={()=>closeFooter()}/>
@@ -111,17 +112,21 @@ const SpFooterContent = observer((props) => {
             </div>
           </div>}
         {action == "Withdraw" && <div>
-          <div style={{padding: "var(--spacing) 0"}}>Current Withdraw Values</div>
-          <div className="grid">
+          <div style={{padding: "var(--spacing) 0"}}>Current Withdraw Value{singleWithdrawValue ? ": " : "s:"}
+          {singleWithdrawValue && <span>
+            $<ANS val={withdrawValues.usd} decimals={2}/>
+          </span>}
+          </div>
+          {!singleWithdrawValue && <div className="grid">
             <p>
               <small> {usdPercnet}% in <strong>{asset}</strong></small> <br/>
-              $<ANS val={withdrawValues.usd} decimals={4}/>
+              $<ANS val={withdrawValues.usd} decimals={2}/>
             </p>
-            {collPercnet != "0.00" && <p>
+            <p>
               <small> {collPercnet}% in collateral ({collaterals.map(coll => <strong>{coll.symbol} </strong>)})</small> <br/>
               $<ANS val={withdrawValues.coll} decimals={4}/><br/>
-            </p>}
-          </div>
+            </p>
+          </div>}
         </div>}
     </div>
   )
@@ -274,7 +279,7 @@ class SpActionBox extends Component {
           </Flex>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
             <div>{"TBD"}%</div>
-            <div><small> APR</small> <TooltipIcon text={"APR is the same as on Vestafinance.xyz"} /></div>
+            <div><small> APR</small> <TooltipIcon text={"The APR is identical to vestafinance.xyz, and will be displayed soon"} /></div>
           </Flex>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
             <div>
