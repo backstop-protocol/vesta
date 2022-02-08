@@ -208,7 +208,7 @@ const ConnectContainer = styled.div`
   box-sizing: border-box;
   min-width: 0px;
   -webkit-box-pack: center;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   flex-direction: column;
   display: flex;
@@ -217,9 +217,11 @@ const ConnectContainer = styled.div`
   
   @media screen and (min-width: 300px){
     margin-left: calc(50% - 100px);
+    min-height: 90px;
   }
   @media screen and (min-width: 700px){
     margin-left: 85px;
+    min-height: 100px;
   }
   @media screen and (min-width: 1000px){
     margin-left: 95px;
@@ -242,7 +244,7 @@ class VestaInfoPage extends Component {
       <div style={{backgroundColor: "white"}}>
         <Jumbotron>
           <Title>Automated Rebalancing for Vesta Stability Pool</Title>
-          <SubTitle>Powered by B.Protocol v2</SubTitle>
+          <SubTitle>Powered by B.Protocol</SubTitle>
         </Jumbotron>
         <ConnectContainer>
           <ConnectButton/>
@@ -256,7 +258,7 @@ class VestaInfoPage extends Component {
                 Vesta Protocol
               </GiTitle>
               <GiText>
-                B.Protocol v2 and its novel Backstop AMM (B.AMM) automates the rebalancing of Vesta Stability Pool to maintain its strength. Read more on how the Vesta SP is working here.
+                B.Protocol and its novel Backstop AMM (B.AMM) automates the rebalancing of Vesta Stability Pool to maintain its strength. Read more on how the Vesta SP is working <a style={{color: "#0f874a"}} target='_blank' href={"https://docs.vestafinance.xyz/technical-overview/liquidation-and-the-stability-pool"}>here. </a>
               </GiText>
             </GridItem>
             <GridItem>
@@ -266,17 +268,17 @@ class VestaInfoPage extends Component {
                 Yield on Your VST
               </GiTitle>
               <GiText>
-                By using B.Protocol to deposit your VST into Vesta Stability Pool, you can save the manual operation of selling your accumulated ETH back to VST every time a liquidation is taking place. Read more about how it’s done here.
+                By using B.Protocol to deposit your VST into Vesta Stability Pool, you can save the manual operation of selling your accumulated ETH back to VST every time a liquidation is taking place. Read more about how it’s done <a style={{color: "#0f874a"}} target='_blank' href={"https://medium.com/b-protocol/b-protocol-liquity-integration-is-live-1342605e7cfb"}>here. </a>
               </GiText>
             </GridItem>
             <GridItem>
               <Image src={image3}/>
               <GiTitle>
                 Using <br/>
-                B.Protocl V2
+                B.Protocol
               </GiTitle>
               <GiText>
-              The integration of Liqity with B.Protocol v2 is a step forward towards a more stabilized DeFi ecosystem. Read more about the novel B.AMM design that enables that here.
+              The integration of Vesta with B.Protocol is a step forward towards a more stabilized DeFi ecosystem. Read more about the novel B.AMM design that enables that <a style={{color: "#0f874a"}} target='_blank' href={"https://medium.com/b-protocol/b-amm-efficient-automated-market-maker-for-defi-liquidations-fea7b0fdc0c5"}>here. </a>
               </GiText>
 
             </GridItem>

@@ -1,1 +1,0 @@
-rsync -avr --exclude='farm-info' build/ build/farm-info

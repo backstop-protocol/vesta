@@ -1,9 +1,9 @@
 /**
  * @format
  */
-import { makeAutoObservable, runInAction, computed } from "mobx"
-import {getPools} from "../lib/hundred/config"
-import * as Interface from "../lib/hundred/interface"
+import { makeAutoObservable, runInAction } from "mobx"
+import {getPools} from "../lib/vesta/config"
+import * as Interface from "../lib/vesta/interface"
 import userStore from "./user.store"
 import { ApiAction } from "../lib/ApiHelper"
 import Web3 from "web3"
@@ -85,7 +85,7 @@ class PoolStore {
       return
     }
 
-    if(this.action == "Deposit") {
+    if(this.action === "Deposit") {
       if(parseFloat(input) > parseFloat(this.walletBalance)){
         this.inputIsValid = false
         this.inputErrMsg = "Insufficient wallet balance"
@@ -99,7 +99,7 @@ class PoolStore {
       }
     }
 
-    if(this.action == "Withdraw") {
+    if(this.action === "Withdraw") {
       if(parseFloat(input) > parseFloat(this.userShareInUsd)){
         this.inputIsValid = false
         this.inputErrMsg = `${this.action} amount is greater than balance`
@@ -300,7 +300,7 @@ class PoolStore {
 
 }
 
-class HundredStore {
+class VestaStore {
   stabilityPools = []
 
   constructor() {
@@ -321,4 +321,4 @@ class HundredStore {
   }
 }
 
-export default new HundredStore()
+export default new VestaStore()

@@ -8,6 +8,7 @@ import userStore from "../../stores/user.store"
 import TermsOfUseContent from "../../components/TermsOfUseContent"
 import {Close} from "../../components/style-components/Buttons"
 import {walletTypes} from "../../wallets/Wallets"
+import {isMobile} from "../../screenSizes";
 
 class ConnectButton extends Component {
 
@@ -26,6 +27,7 @@ class ConnectButton extends Component {
     } else {
       btnText = "Connect"
     }
+    const onMobile = isMobile()
     return (
       <div>
         <dialog id="wallet-select-modal">
@@ -54,11 +56,13 @@ class ConnectButton extends Component {
           id="connect-button"
           onClick={()=>window.toggleModal("wallet-select-modal")}
           style={{
-            width: "200px",
+            width: onMobile ? "150px" : "200px",
             whiteSpace: "nowrap",
             overflow: "hidden",
-            textOverflow: "ellipsis"
-          }} 
+            textOverflow: "ellipsis",
+            marginBottom: "0",
+            //marginLeft: onMobile ? "0" : "15px"
+          }}
           aria-busy={connecting} 
           className="contrast outline">
             {btnText}

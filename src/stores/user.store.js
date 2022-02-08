@@ -1,35 +1,34 @@
 /**
  * @format
  */
-import React, {Component} from "react";
+import React from "react";
 import { runInAction, makeAutoObservable } from "mobx"
-import routerStore from "./router.store"
 import EventBus from "../lib/EventBus"
-import Web3 from "web3"
-import hundredStore from "./hundred.store"
-import WalletConnectProvider from "@walletconnect/web3-provider";
+import vestaStore from "./vesta.store"
 import {walletTypes, getMetaMask, getWalletConnect} from "../wallets/Wallets"
-import WalletSelectionModal from "../components/modals/WalletSelectionModal"
 
 const chainIdMap = {
     1: "mainnet",
     42: "kovan",
     250: "fantom",
-    421611: "Arbitrum Testnet"
+    421611: "Arbitrum Testnet",
+    42161: "Arbitrum One"
 }
 
 const supportedChainsMap = {
     // 1: "mainnet",
     // 42: "kovan",
     // 250: "fantom",
-    421611: "Arbitrum Testnet"
+    421611: "Arbitrum Testnet",
+    42161: "Arbitrum One"
 }
 
 const networkScannerMap = {
     "mainnet": "etherscan.io",
     "kovan": "kovan.etherscan.io",
     "fantom": "ftmscan.com",
-    "Arbitrum Testnet": "testnet.arbiscan.io/"
+    "Arbitrum Testnet": "testnet.arbiscan.io",
+    "Arbitrum One": "arbiscan.io"
 }
 
 class UserStore {
@@ -60,23 +59,6 @@ class UserStore {
         if(!walletType) return
         this.walletType = walletType
         this.connect()
-    }
-
-    _selectWallet = async () => {
-        return new Promise((resolve, reject) =>{
-            this.walletSelectionResult = null
-            const noWrapper = true
-            EventBus.$emit('show-modal', <WalletSelectionModal/>, noWrapper);
-            EventBus.$on('close-modal', ()=>{
-                if(this.walletSelectionResult){
-                    this.walletType = this.walletSelectionResult
-                    resolve()
-                } else {
-                    reject(new Error("no wallet selection"))
-                }
-            })
-        })
-
     }
 
     handleAccountsChanged = async (accounts) => {
@@ -138,8 +120,8 @@ class UserStore {
                     return "or " + n
                 }
                 return n + " "
-            })
-            EventBus.$emit("app-error", `${chainIdMap[networkType]} network is not supported, please switch to ${supported}`);
+            }).join("")
+            EventBus.$emit("app-error", `${chainIdMap[networkType]} network is not supported. please switch to ${supported}`);
             return false;
         }
         runInAction(()=> {
@@ -148,7 +130,7 @@ class UserStore {
             this.loggedIn = true
             this.displayConnect = false
         })
-        hundredStore.onUserConnect()
+        vestaStore.onUserConnect()
     }
 
     showConnect = () => {

@@ -1,7 +1,7 @@
 /**
  * @format
  */
-import { makeAutoObservable, runInAction } from "mobx"
+import { makeAutoObservable } from "mobx"
 
 class RouterStore {
     routeProps = {}
