@@ -11,6 +11,7 @@ const {toBN} = Web3.utils
 
 const reallyLargeAllowance = toBN("8888888888888888888888888888888888888888888888888888888888888888", 16)
 const wait = (seconds) => new Promise(resolve => setTimeout(resolve, seconds * 1000))
+let vestaStore;
 
 class PoolStore {
   totalEth = "0"
@@ -175,6 +176,9 @@ class PoolStore {
         wait(5)
       ])
       updateUi()
+      if(vestaStore){
+        vestaStore.refreshStores(this.config.poolAddress)
+      }
       this.reset()
     }
   }
@@ -206,6 +210,9 @@ class PoolStore {
         wait(5)
       ])
       updateUi()
+      if(vestaStore){
+        vestaStore.refreshStores(this.config.poolAddress)
+      }
       this.reset()
     }
   }
@@ -234,6 +241,9 @@ class PoolStore {
         wait(5)
       ])
       updateUi()
+      if(vestaStore){
+        vestaStore.refreshStores(this.config.poolAddress)
+      }
       this.reset()
     }
   }
@@ -307,6 +317,15 @@ class VestaStore {
     makeAutoObservable(this)
   }
 
+  refreshStores = async (excludedPoolAddress) => {
+    for (const pool of this.stabilityPools){
+      if(pool.config && pool.config.poolAddress === excludedPoolAddress) {
+        return
+      }
+      await pool.fetchData()
+    }
+  }
+
   onUserConnect = async () => {
     const {chain} = userStore
     const pools = []
@@ -321,4 +340,6 @@ class VestaStore {
   }
 }
 
-export default new VestaStore()
+vestaStore = new VestaStore()
+
+export default vestaStore 
