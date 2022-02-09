@@ -6,6 +6,7 @@ import {getPools} from "../lib/vesta/config"
 import * as Interface from "../lib/vesta/interface"
 import userStore from "./user.store"
 import { ApiAction } from "../lib/ApiHelper"
+import axios from "axios"
 import Web3 from "web3"
 const {toBN} = Web3.utils
 
@@ -320,9 +321,18 @@ class PoolStore {
 
 class VestaStore {
   stabilityPools = []
+  aprs = []
 
   constructor() {
     makeAutoObservable(this)
+    this.fetchAprs()
+  }
+
+  fetchAprs = async () => {
+    const { data: res } = await axios.get("https://scraper-api.s3.amazonaws.com/VESTA_APR.json")
+    runInAction(()=> {
+      this.aprs = res
+    })
   }
 
   refreshStores = async (excludedPoolAddress) => {

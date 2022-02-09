@@ -41,7 +41,7 @@ class Vesta extends Component {
         {!showInfoPage && <div>
           <Navbar/>
           <div className="container">
-            {vestaStore.stabilityPools.map((sp, i)=> <SpActionBox key={i} store={sp}/>)}
+            {vestaStore.stabilityPools.map((sp, i)=> <SpActionBox key={i} store={sp} apr={vestaStore.aprs[i]}/>)}
           </div>
         </div>}
         {showInfoPage && <VestaInfoPage/>}

@@ -278,7 +278,7 @@ class SpActionBox extends Component {
             <small>Balance</small>
           </Flex>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
-            <div>{"TBD"}%</div>
+            <div>{this.props.apr}</div>
             <div><small> APR</small> <TooltipIcon text={"The APR is identical to vestafinance.xyz, and will be displayed soon"} /></div>
           </Flex>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
