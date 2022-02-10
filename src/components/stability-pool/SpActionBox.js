@@ -58,17 +58,18 @@ const AnimatedContainer = styled.div`
 `
 
 const ErrorMessage = ({children}) => {
-  if(!children) return null
+  const styles = {
+    color: "var(--del-color)",
+    display: "block",
+    position: "relative",
+    top: "0",
+    left: "0",
+    height: "var(--spacing)",
+    marginTop: "calc(0px - var(--spacing))",
+  }
+  if(!children) return <small style={styles}/>
   return (
-    <small style={{
-        color: "var(--del-color)",
-        display: "block",
-        position: "relative",
-        top: "0",
-        left: "0",
-        height: "var(--spacing)",
-        marginTop: "calc(0px - var(--spacing))",
-      }}>
+    <small className="fade-in" style={styles}>
       {children}
     </small>
   )
@@ -96,6 +97,7 @@ const SpFooterContent = observer((props) => {
   const {grantAllowance, hasAllowance, allowanceInProgress, collPercnet, usdPercnet } = props.store
   let doAction = action === "Deposit" ? props.store.deposit : props.store.withdraw
   const singleWithdrawValue = parseFloat(collPercnet) < 0.01
+  const onMobile = isMobile()
   return (
     <div>
       <Close onClick={()=>closeFooter()}/>
@@ -103,13 +105,24 @@ const SpFooterContent = observer((props) => {
         <div>
           <div>
             <p>How much <strong>{action === "Deposit" ? asset : ""}</strong> would you like to {action}?</p>
-            <Flex wrap>
+            {!onMobile && <Flex wrap>
               <input value={val} onChange={onInputChange} style={{width: "50%", minWidth: "300px", marginRight: "var(--grid-spacing-horizontal)"}}type="number" step="0.01" placeholder={`Amount in ${asset}`} aria-invalid={inputIsInvalid} required/> 
               <div style={{width: "25%", minWidth: "180px"}}>
                 <button disabled={inputIsInvalid} onClick={()=> doAction(val)}>{action}</button>
               </div>
-            </Flex>
+            </Flex>}
+            {onMobile && <input 
+                value={val} 
+                onChange={onInputChange} 
+                style={{width: "100%"}} 
+                type="number" 
+                step="0.01" placeholder={`Amount in ${asset}`} 
+                aria-invalid={inputIsInvalid} required/> }
             <ErrorMessage>{inputErrMsg}</ErrorMessage>
+            {onMobile && <button 
+                disabled={inputIsInvalid} 
+                onClick={()=> doAction(val)}>{action}</button>}
+
             {action == "Deposit" && <Unlock {...{grantAllowance, hasAllowance, allowanceInProgress, asset, action}} />}
           </div>
         </div>
