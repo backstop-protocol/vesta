@@ -26,7 +26,7 @@ class PoolStore {
   totalToken = "0"
   tvl = "0"
   amount = "0"
-  apy = "7"
+  apr = "0"
   walletBalance = "0"
   footerIsOpen = false
   action = "Deposit"
@@ -277,6 +277,8 @@ class PoolStore {
     try{
       const context = this.getContext()
       this.decimals = this.config.decimals
+      const aprPromise = Interface.getApr(context)
+        .catch(err => console.error(`failed to fetch APR: ${err.message} @ ${err.stack}`)) // will not block
       const tvlPromise = Interface.getTvl(context)
       const walletBalancePromise = Interface.getWalletBallance(context)
       const poolBalancePromise = Interface.getPoolBallance(context)
@@ -285,14 +287,15 @@ class PoolStore {
       const collateralsPromise = Interface.getCollaterals(context)
       const rewardPromise = Interface.getReward(context)
       // fetching in  parallel
-      const [walletBalance, { eth, token }, {tvl, usdRatio, collRatio}, allowance, userShareInUsd, collaterals, reward] = await Promise.all([
+      const [walletBalance, { eth, token }, {tvl, usdRatio, collRatio}, allowance, userShareInUsd, collaterals, reward, apr] = await Promise.all([
         walletBalancePromise, 
         poolBalancePromise,
         tvlPromise,
         allowancePromise,
         userShareInUsdPromise,
         collateralsPromise,
-        rewardPromise
+        rewardPromise,
+        aprPromise
       ])
       
       const uiUpdate = () => {
@@ -305,6 +308,7 @@ class PoolStore {
           this.usdRatio = usdRatio
           this.collaterals.replace(collaterals)
           this.reward = reward
+          this.apr = apr
         })
       }
       if (updateFn === true){

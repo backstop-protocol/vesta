@@ -257,7 +257,7 @@ class SpActionBox extends Component {
   }
 
   render() {
-    const {asset, userShareInUsd, apy, walletBalance, tvl, footerIsOpen, action, openFooter, closeFooter, reward, config, collaterals} = this.props.store
+    const {asset, userShareInUsd, walletBalance, tvl, footerIsOpen, action, openFooter, closeFooter, reward, config, collaterals, apr} = this.props.store
     const { collateralName, platformName } = config
     const onMobile = isMobile()
     return (
@@ -278,7 +278,7 @@ class SpActionBox extends Component {
             <small>Balance</small>
           </Flex>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
-            <div>{"TBD"}%</div>
+            <div><ANS val={apr} decimals={2}/>%</div>
             <div><small> APR</small> <TooltipIcon text={"The APR is identical to vestafinance.xyz, and will be displayed soon"} /></div>
           </Flex>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
