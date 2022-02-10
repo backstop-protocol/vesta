@@ -160,6 +160,7 @@ const ClaimContent = observer((props) => {
   const {grantAllowance, hasAllowance, allowanceInProgress, collPercnet, usdPercnet, reward } = props.store
   let doAction = props.store.claimReward
   if(!reward) return null
+  const onMobile = isMobile()
   return (
     <div>
       <Close onClick={()=>closeFooter()}/>
@@ -169,7 +170,7 @@ const ClaimContent = observer((props) => {
               <h4>
                 <ANS val={reward.unclaimed} decimals={4}/> <strong>{reward.symbol}</strong>
               </h4>
-              <div style={{width: "25%", minWidth: "180px"}}>
+              <div style={{width: onMobile ? "100%" : "25%", minWidth: "180px"}}>
                 <button disabled={inputIsInvalid} onClick={()=> doAction(val)}>{action}</button>
               </div>
             </div>
@@ -191,6 +192,9 @@ const TxMessage = styled.h5`
   padding: 0 var(--spacing);
   opacity: 0;
   animation: fadein 1s forwards;
+  @media ${device.mobile} {
+    text-align: center;
+  }
 `
 
 const ResIcon = styled.img`
@@ -205,19 +209,20 @@ const SpTx = observer((props)=> {
   if (action === "Claim"){
     msg =`${action}ing ${parseFloat(reward.unclaimed).toFixed(2)} ${reward.symbol} `
   }
+  const onMobile = isMobile()
   return (
       <Flex column justifyCenter full style={{minHeight: "160px"}}>
-        <Flex justifyBetween alignCenter full>
-          {!err && !success && <Flex alignCenter>
+        <Flex column={onMobile} justifyBetween alignCenter full>
+          {!err && !success && <Flex column={onMobile} alignCenter>
               <BpLoader color="var(--contrast)"/>
               <TxMessage>{msg}</TxMessage>
             </Flex>}
           {err && 
-            <Flex alignCenter>
+            <Flex column={onMobile} alignCenter>
               <ResIcon src={XIcon} />
               <TxMessage>{msg + "failed"}</TxMessage>
             </Flex>}
-          {success && <Flex alignCenter>
+          {success && <Flex column={onMobile} alignCenter>
               <ResIcon src={VIcon} />
               <TxMessage>{msg + "completed"}</TxMessage>
             </Flex>}
