@@ -279,7 +279,7 @@ class SpActionBox extends Component {
           </Flex>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
             <div><ANS val={apr} decimals={2}/>%</div>
-            <div><small> APR</small> <TooltipIcon text={"The APR is identical to vestafinance.xyz, and will be displayed soon"} /></div>
+            <div><small> APR</small> <TooltipIcon text={"The APR is identical to vestafinance.xyz"} /></div>
           </Flex>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
             <div>
