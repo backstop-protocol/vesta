@@ -3,7 +3,6 @@ import {observer} from "mobx-react"
 import Flex, {FlexItem} from "styled-flex-component"
 import styled from "styled-components"
 import { makeAutoObservable, runInAction, observable } from "mobx"
-import {device} from "../../screenSizes";
 import View from "./View"
 import BpLoader from "../style-components/BpLoader"
 import VIcon from "../../assets/v-icon.svg";
@@ -11,7 +10,7 @@ import XIcon from "../../assets/red-x-icon.svg";
 import ANS from "../style-components/AnimateNumericalString"
 import {Close} from "../style-components/Buttons"
 import TooltipIcon from "../style-components/TooltipIcon"
-import {isMobile} from "../../screenSizes";
+import {isMobile, device} from "../../screenSizes";
 
 const MainAssetIcon = styled.div`
   height: 60px;
@@ -32,6 +31,12 @@ const SubIcon = styled.div`
   background-size: contain;
 `
 
+const SpGridItem = styled.div`
+  @media ${device.mobile} {
+    padding-bottom: 15px;
+  }
+`
+
 const AnimatedContent = styled.div`
     height: 100%;
     transition: ${({open}) => open ? "all 0.3s ease-in-out 0.3s" : "" };
@@ -39,6 +44,11 @@ const AnimatedContent = styled.div`
     position: ${({open}) => open ? "initial" : "absolute" }; 
     opacity: ${({open}) => open ? 1 : 0 };
     padding: 40px;
+    @media ${device.mobile} {
+      padding: 0;
+      padding-top: ${({open}) => open ? "40px" : 0 }; 
+      padding-bottom: 20px;
+    }
     padding-top: ${({open}) => open ? "40px" : 0 }; 
 `
 
@@ -263,6 +273,7 @@ class SpActionBox extends Component {
     return (
     <article>
       <Flex justifyBetween alignCenter wrap column={onMobile}>
+        <SpGridItem>
           <Flex alignCenter justifyBetween={onMobile} full={onMobile}>
             <MainAssetIcon src={getCoinIcon(asset)}>
               {collateralName && <SubIcon src={getCoinIcon(collateralName)}/>}
@@ -273,14 +284,20 @@ class SpActionBox extends Component {
             </Flex>
             {onMobile &&  <div style={{width: "76px"}}></div>}
           </Flex>
+        </SpGridItem>
+        <SpGridItem>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
             <div>$<ANS val={userShareInUsd} decimals={2}/></div>
             <small>Balance</small>
           </Flex>
+        </SpGridItem>
+        <SpGridItem>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
             <div>{"TBD"}%</div>
             <div><small> APR</small> <TooltipIcon text={"The APR is identical to vestafinance.xyz, and will be displayed soon"} /></div>
           </Flex>
+        </SpGridItem>
+        <SpGridItem>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
             <div>
               <ANS val={reward ? reward.unclaimed : "0"} decimals={2}/> <strong>{reward ? reward.symbol : ""}</strong>
@@ -290,14 +307,19 @@ class SpActionBox extends Component {
               {!reward && <span>Reward</span>}
             </small>
           </Flex>
+        </SpGridItem>
           {/* <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
             <div>$<ANS val={tvl} decimals={2}/></div>
             <small>TVL</small>
           </Flex> */}
-          <Flex column alignCenter justifyCenter style={{padding: "0 var(--spacing)", minHeight: "calc(var(--font-size) * 4.5)"}}>
+          {!onMobile && <Flex column alignCenter justifyCenter style={{padding: "0 var(--spacing)", minHeight: "calc(var(--font-size) * 4.5)"}}>
             <a onClick={()=>openFooter("Deposit")}>Deposit</a>
             <a onClick={()=>openFooter("Withdraw")}>Withdraw</a>
-          </Flex>
+          </Flex>}
+          {onMobile && <Flex alignCenter column full justifyBetween style={{padding: "0", minHeight: "calc(var(--font-size) * 4.5)"}}>
+            <button className="contrast" onClick={()=>openFooter("Deposit")}>Deposit</button>
+            <button className="contrast outline" onClick={()=>openFooter("Withdraw")}>Withdraw</button>
+          </Flex>}
       </Flex>
       <SpFooter store={this.props.store}/>
     </article>
