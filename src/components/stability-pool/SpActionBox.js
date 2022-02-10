@@ -80,8 +80,9 @@ const Unlock = observer(({grantAllowance, hasAllowance, allowanceInProgress, ass
   if(allowanceInProgress) {
     msg = `Unlocking ${asset}`
   }
+  const onMobile = isMobile()
   return (
-    <div style={{width: "50%", minWidth: "300px", marginRight: "var(--grid-spacing-horizontal)", pointerEvents: hasAllowance ? "none" : "auto", visibility: action === "Deposit" ? "visible" : "hidden"}}>
+    <div style={{width: onMobile ? "100%" : "50%", minWidth: "300px", marginRight: "var(--grid-spacing-horizontal)", pointerEvents: hasAllowance ? "none" : "auto", visibility: action === "Deposit" ? "visible" : "hidden"}}>
           <Flex justifyBetween alignCenter>
             <label htmlFor="switch">
               {msg}
