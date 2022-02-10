@@ -35,16 +35,19 @@ class Vesta extends Component {
       },
 
     ]
-    const showInfoPage = !userStore.loggedIn
+    const hideInfoPage = userStore.loggedIn || userStore.connecting
     return (
       <div className="content">
-        {!showInfoPage && <div>
+        {hideInfoPage && <div>
           <Navbar/>
-          <div className="container">
+          <div className="container" >
+            {vestaStore.loading && <div className="fade-in" style={{marginTop: '200px', textAlign: 'center'}} aria-busy={vestaStore.loading}>
+              loading...
+            </div>}
             {vestaStore.stabilityPools.map((sp, i)=> <SpActionBox key={i} store={sp}/>)}
           </div>
         </div>}
-        {showInfoPage && <VestaInfoPage/>}
+        {!hideInfoPage && <VestaInfoPage/>}
       </div>
     );
   }
