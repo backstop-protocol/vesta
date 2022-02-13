@@ -262,7 +262,7 @@ class SpActionBox extends Component {
     const onMobile = isMobile()
     return (
     <article>
-      <Flex justifyBetween alignCenter wrap column={onMobile}>
+      <Flex className="fade-in" justifyBetween alignCenter wrap column={onMobile}>
           <Flex alignCenter justifyBetween={onMobile} full={onMobile}>
             <MainAssetIcon src={getCoinIcon(asset)}>
               {collateralName && <SubIcon src={getCoinIcon(collateralName)}/>}

@@ -324,6 +324,7 @@ class PoolStore {
 
 class VestaStore {
   stabilityPools = []
+  loading = false
 
   constructor() {
     makeAutoObservable(this)
@@ -339,16 +340,18 @@ class VestaStore {
   }
 
   onUserConnect = async () => {
+    this.loading = true
     const {chain} = userStore
     const pools = []
     for (const pool of getPools(chain)){
       const store = new PoolStore(pool)
       await store.init()
       pools.push(store)
-      runInAction(()=> {
-        this.stabilityPools.replace(pools)
-      })
     }
+    runInAction(()=> {
+      this.stabilityPools.replace(pools)
+      this.loading = false
+    })
   }
 }
 

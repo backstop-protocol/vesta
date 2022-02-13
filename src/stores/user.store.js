@@ -41,7 +41,7 @@ class UserStore {
     displayConnectTimeOut
     walletType = null
     provider
-    connecting = false
+    connecting = true
 
     get chain() {
         return chainIdMap[this.networkType]
@@ -67,6 +67,10 @@ class UserStore {
     }
 
     connect = async (newConnection = true) => { 
+        console.log({
+            "loader": "loader",
+            "trying to connect": "trying to connect"
+        })
         this.connecting = true
         try{
             if(!this.walletType){
@@ -86,10 +90,9 @@ class UserStore {
             // setting event listeners
             this.provider.on('chainChanged', (_chainId) => window.location.reload());
             this.provider.on('accountsChanged', this.handleAccountsChanged)
-            this.onConnect(this.web3.utils.toChecksumAddress(userAccount))
+            await this.onConnect(this.web3.utils.toChecksumAddress(userAccount))
         } catch (e) {
             if(e.message === "no wallet selection"){
-                return
             }
             console.error(e)
             this.loggedIn = false
@@ -103,6 +106,7 @@ class UserStore {
         // read from the localstorage the wallet type
         this.walletType = window.localStorage.getItem("walletType")
         if(!this.walletType){
+            this.connecting = false
             return // exit
         }
         // try to establish a connection to the previously connected wallet
@@ -124,13 +128,13 @@ class UserStore {
             EventBus.$emit("app-error", `${chainIdMap[networkType]} network is not supported. please switch to ${supported}`);
             return false;
         }
+        this.networkType = networkType
+        this.user = user
+        vestaStore.onUserConnect()
         runInAction(()=> {
-            this.networkType = networkType
-            this.user = user
             this.loggedIn = true
             this.displayConnect = false
         })
-        vestaStore.onUserConnect()
     }
 
     showConnect = () => {
