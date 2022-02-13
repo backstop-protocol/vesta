@@ -3,7 +3,6 @@ import {observer} from "mobx-react"
 import Flex, {FlexItem} from "styled-flex-component"
 import styled from "styled-components"
 import { makeAutoObservable, runInAction, observable } from "mobx"
-import {device} from "../../screenSizes";
 import View from "./View"
 import BpLoader from "../style-components/BpLoader"
 import VIcon from "../../assets/v-icon.svg";
@@ -11,7 +10,7 @@ import XIcon from "../../assets/red-x-icon.svg";
 import ANS from "../style-components/AnimateNumericalString"
 import {Close} from "../style-components/Buttons"
 import TooltipIcon from "../style-components/TooltipIcon"
-import {isMobile} from "../../screenSizes";
+import {isMobile, device} from "../../screenSizes";
 
 const MainAssetIcon = styled.div`
   height: 60px;
@@ -32,6 +31,12 @@ const SubIcon = styled.div`
   background-size: contain;
 `
 
+const SpGridItem = styled.div`
+  @media ${device.mobile} {
+    padding-bottom: 15px;
+  }
+`
+
 const AnimatedContent = styled.div`
     height: 100%;
     transition: ${({open}) => open ? "all 0.3s ease-in-out 0.3s" : "" };
@@ -39,6 +44,11 @@ const AnimatedContent = styled.div`
     position: ${({open}) => open ? "initial" : "absolute" }; 
     opacity: ${({open}) => open ? 1 : 0 };
     padding: 40px;
+    @media ${device.mobile} {
+      padding: 0;
+      padding-top: ${({open}) => open ? "40px" : 0 }; 
+      padding-bottom: 20px;
+    }
     padding-top: ${({open}) => open ? "40px" : 0 }; 
 `
 
@@ -48,17 +58,18 @@ const AnimatedContainer = styled.div`
 `
 
 const ErrorMessage = ({children}) => {
-  if(!children) return null
+  const styles = {
+    color: "var(--del-color)",
+    display: "block",
+    position: "relative",
+    top: "0",
+    left: "0",
+    height: "var(--spacing)",
+    marginTop: "calc(0px - var(--spacing))",
+  }
+  if(!children) return <small style={styles}/>
   return (
-    <small style={{
-        color: "var(--del-color)",
-        display: "block",
-        position: "relative",
-        top: "0",
-        left: "0",
-        height: "var(--spacing)",
-        marginTop: "calc(0px - var(--spacing))",
-      }}>
+    <small className="fade-in" style={styles}>
       {children}
     </small>
   )
@@ -69,8 +80,9 @@ const Unlock = observer(({grantAllowance, hasAllowance, allowanceInProgress, ass
   if(allowanceInProgress) {
     msg = `Unlocking ${asset}`
   }
+  const onMobile = isMobile()
   return (
-    <div style={{width: "50%", minWidth: "300px", marginRight: "var(--grid-spacing-horizontal)", pointerEvents: hasAllowance ? "none" : "auto", visibility: action === "Deposit" ? "visible" : "hidden"}}>
+    <div style={{width: onMobile ? "100%" : "50%", minWidth: "300px", marginRight: "var(--grid-spacing-horizontal)", pointerEvents: hasAllowance ? "none" : "auto", visibility: action === "Deposit" ? "visible" : "hidden"}}>
           <Flex justifyBetween alignCenter>
             <label htmlFor="switch">
               {msg}
@@ -86,6 +98,7 @@ const SpFooterContent = observer((props) => {
   const {grantAllowance, hasAllowance, allowanceInProgress, collPercnet, usdPercnet } = props.store
   let doAction = action === "Deposit" ? props.store.deposit : props.store.withdraw
   const singleWithdrawValue = parseFloat(collPercnet) < 0.01
+  const onMobile = isMobile()
   return (
     <div>
       <Close onClick={()=>closeFooter()}/>
@@ -93,13 +106,24 @@ const SpFooterContent = observer((props) => {
         <div>
           <div>
             <p>How much <strong>{action === "Deposit" ? asset : ""}</strong> would you like to {action}?</p>
-            <Flex wrap>
+            {!onMobile && <Flex wrap>
               <input value={val} onChange={onInputChange} style={{width: "50%", minWidth: "300px", marginRight: "var(--grid-spacing-horizontal)"}}type="number" step="0.01" placeholder={`Amount in ${asset}`} aria-invalid={inputIsInvalid} required/> 
               <div style={{width: "25%", minWidth: "180px"}}>
                 <button disabled={inputIsInvalid} onClick={()=> doAction(val)}>{action}</button>
               </div>
-            </Flex>
+            </Flex>}
+            {onMobile && <input 
+                value={val} 
+                onChange={onInputChange} 
+                style={{width: "100%"}} 
+                type="number" 
+                step="0.01" placeholder={`Amount in ${asset}`} 
+                aria-invalid={inputIsInvalid} required/> }
             <ErrorMessage>{inputErrMsg}</ErrorMessage>
+            {onMobile && <button 
+                disabled={inputIsInvalid} 
+                onClick={()=> doAction(val)}>{action}</button>}
+
             {action == "Deposit" && <Unlock {...{grantAllowance, hasAllowance, allowanceInProgress, asset, action}} />}
           </div>
         </div>
@@ -137,6 +161,7 @@ const ClaimContent = observer((props) => {
   const {grantAllowance, hasAllowance, allowanceInProgress, collPercnet, usdPercnet, reward } = props.store
   let doAction = props.store.claimReward
   if(!reward) return null
+  const onMobile = isMobile()
   return (
     <div>
       <Close onClick={()=>closeFooter()}/>
@@ -146,7 +171,7 @@ const ClaimContent = observer((props) => {
               <h4>
                 <ANS val={reward.unclaimed} decimals={4}/> <strong>{reward.symbol}</strong>
               </h4>
-              <div style={{width: "25%", minWidth: "180px"}}>
+              <div style={{width: onMobile ? "100%" : "25%", minWidth: "180px"}}>
                 <button disabled={inputIsInvalid} onClick={()=> doAction(val)}>{action}</button>
               </div>
             </div>
@@ -168,6 +193,9 @@ const TxMessage = styled.h5`
   padding: 0 var(--spacing);
   opacity: 0;
   animation: fadein 1s forwards;
+  @media ${device.mobile} {
+    text-align: center;
+  }
 `
 
 const ResIcon = styled.img`
@@ -182,19 +210,20 @@ const SpTx = observer((props)=> {
   if (action === "Claim"){
     msg =`${action}ing ${parseFloat(reward.unclaimed).toFixed(2)} ${reward.symbol} `
   }
+  const onMobile = isMobile()
   return (
       <Flex column justifyCenter full style={{minHeight: "160px"}}>
-        <Flex justifyBetween alignCenter full>
-          {!err && !success && <Flex alignCenter>
+        <Flex column={onMobile} justifyBetween alignCenter full>
+          {!err && !success && <Flex column={onMobile} alignCenter>
               <BpLoader color="var(--contrast)"/>
               <TxMessage>{msg}</TxMessage>
             </Flex>}
           {err && 
-            <Flex alignCenter>
+            <Flex column={onMobile} alignCenter>
               <ResIcon src={XIcon} />
               <TxMessage>{msg + "failed"}</TxMessage>
             </Flex>}
-          {success && <Flex alignCenter>
+          {success && <Flex column={onMobile} alignCenter>
               <ResIcon src={VIcon} />
               <TxMessage>{msg + "completed"}</TxMessage>
             </Flex>}
@@ -263,6 +292,7 @@ class SpActionBox extends Component {
     return (
     <article>
       <Flex className="fade-in" justifyBetween alignCenter wrap column={onMobile}>
+        <SpGridItem>
           <Flex alignCenter justifyBetween={onMobile} full={onMobile}>
             <MainAssetIcon src={getCoinIcon(asset)}>
               {collateralName && <SubIcon src={getCoinIcon(collateralName)}/>}
@@ -273,14 +303,20 @@ class SpActionBox extends Component {
             </Flex>
             {onMobile &&  <div style={{width: "76px"}}></div>}
           </Flex>
+        </SpGridItem>
+        <SpGridItem>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
             <div>$<ANS val={userShareInUsd} decimals={2}/></div>
             <small>Balance</small>
           </Flex>
+        </SpGridItem>
+        <SpGridItem>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
             <div><ANS val={apr} decimals={2}/>%</div>
             <div><small> APR</small> <TooltipIcon text={"The APR is identical to vestafinance.xyz"} /></div>
           </Flex>
+        </SpGridItem>
+        <SpGridItem>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
             <div>
               <ANS val={reward ? reward.unclaimed : "0"} decimals={2}/> <strong>{reward ? reward.symbol : ""}</strong>
@@ -290,14 +326,19 @@ class SpActionBox extends Component {
               {!reward && <span>Reward</span>}
             </small>
           </Flex>
+        </SpGridItem>
           {/* <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
             <div>$<ANS val={tvl} decimals={2}/></div>
             <small>TVL</small>
           </Flex> */}
-          <Flex column alignCenter justifyCenter style={{padding: "0 var(--spacing)", minHeight: "calc(var(--font-size) * 4.5)"}}>
+          {!onMobile && <Flex column alignCenter justifyCenter style={{padding: "0 var(--spacing)", minHeight: "calc(var(--font-size) * 4.5)"}}>
             <a onClick={()=>openFooter("Deposit")}>Deposit</a>
             <a onClick={()=>openFooter("Withdraw")}>Withdraw</a>
-          </Flex>
+          </Flex>}
+          {onMobile && <Flex alignCenter column full justifyBetween style={{padding: "0", minHeight: "calc(var(--font-size) * 4.5)"}}>
+            <button className="contrast" onClick={()=>openFooter("Deposit")}>Deposit</button>
+            <button className="contrast outline" onClick={()=>openFooter("Withdraw")}>Withdraw</button>
+          </Flex>}
       </Flex>
       <SpFooter store={this.props.store}/>
     </article>

@@ -90,7 +90,7 @@ class PoolStore {
   validateInput = (input) => {
     if(isNaN(input) || parseFloat(input) <= 0){
       this.inputIsValid = false
-      this.inputErrMsg = `${this.action} amount must be a positive number`
+      this.inputErrMsg = `${this.action} amount must be positive`
       return
     }
 
