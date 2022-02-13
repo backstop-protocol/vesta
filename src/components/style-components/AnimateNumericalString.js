@@ -2,6 +2,11 @@ import React, {Component} from "react";
 import {Spring, animated, interpolate} from 'react-spring/renderprops'
 import {toCommmSepratedString} from "../../lib/Utils"
 
+function truncateToDecimals(num, dec = 2) {
+    const calcDec = Math.pow(10, dec);
+    return Math.trunc(num * calcDec) / calcDec;
+}
+
 export default class AnimateNumericalString extends Component{
 
     constructor(props) {
@@ -29,7 +34,7 @@ export default class AnimateNumericalString extends Component{
                 config={{duration}}
                 from={{ number: this.state.from }}
                 to={{ number: this.state.to }}>
-                {({number}) => <animated.span>{number.interpolate(x=> parseFloat(x).toFixed(decimals))}</animated.span>}
+                {({number}) => <animated.span>{number.interpolate(x=> truncateToDecimals(parseFloat(x)), decimals)}</animated.span>}
             </Spring>
         )
     }

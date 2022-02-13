@@ -286,12 +286,12 @@ class SpActionBox extends Component {
   }
 
   render() {
-    const {asset, userShareInUsd, apy, walletBalance, tvl, footerIsOpen, action, openFooter, closeFooter, reward, config, collaterals} = this.props.store
+    const {asset, userShareInUsd, walletBalance, tvl, footerIsOpen, action, openFooter, closeFooter, reward, config, collaterals, apr} = this.props.store
     const { collateralName, platformName } = config
     const onMobile = isMobile()
     return (
     <article>
-      <Flex justifyBetween alignCenter wrap column={onMobile}>
+      <Flex className="fade-in" justifyBetween alignCenter wrap column={onMobile}>
         <SpGridItem>
           <Flex alignCenter justifyBetween={onMobile} full={onMobile}>
             <MainAssetIcon src={getCoinIcon(asset)}>
@@ -312,8 +312,8 @@ class SpActionBox extends Component {
         </SpGridItem>
         <SpGridItem>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
-            <div>{"TBD"}%</div>
-            <div><small> APR</small> <TooltipIcon text={"The APR is identical to vestafinance.xyz, and will be displayed soon"} /></div>
+            <div><ANS val={apr} decimals={2}/>%</div>
+            <div><small> APR</small> <TooltipIcon text={"The APR is identical to vestafinance.xyz"} /></div>
           </Flex>
         </SpGridItem>
         <SpGridItem>

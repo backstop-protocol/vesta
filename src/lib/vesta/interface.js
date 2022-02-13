@@ -1,5 +1,6 @@
 import Web3 from "web3"
 import { abi } from "./abi"
+import axios from "axios"
 const {toBN, BN} = Web3.utils
 
 export const normlize = (n, decimals) => {
@@ -286,4 +287,34 @@ export const getReward = async({web3, user, lensAddress, poolAddress, rewardAddr
     balance: normlize(balance, decimal), 
   }
 
+}
+
+export const getApr = async ({poolAddress: bammAddress, tokenAddress: vstTokenAddress, web3}) => {
+  // get vesta price
+  const { Contract } = web3.eth
+  const response = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=vesta-finance&vs_currencies=USD")
+  const vestaPrice = Number(response.data["vesta-finance"]["usd"])
+
+  const bammContract = new Contract(abi.bamm, bammAddress)
+  
+  const stabilityPoolAddress = await bammContract.methods.SP().call()
+  const stabilityPoolContract = new Contract(abi.stabilityPool, stabilityPoolAddress)
+
+  const communityIssuanceAddress = await stabilityPoolContract.methods.communityIssuance().call()
+  const communityIssuanceContract = new Contract(abi.communityIssuance, communityIssuanceAddress)  
+
+  const vestaPerMinute = Number(web3.utils.fromWei(await communityIssuanceContract.methods.vstaDistributionsByPool(stabilityPoolAddress).call()))
+  const minutesPerYear = 365 * 24 * 60
+  const vestaPerYearInUSD = vestaPerMinute * minutesPerYear * vestaPrice
+
+  const vstContract = new Contract(abi.erc20, vstTokenAddress)
+  const balanceOfSp = Number(web3.utils.fromWei(await vstContract.methods.balanceOf(stabilityPoolAddress).call()))
+
+  //console.log({vestaPerYearInUSD}, {balanceOfSp}, {vestaPrice}, {minutesPerYear}, {vestaPerMinute})
+
+  const apr = vestaPerYearInUSD * 100 / balanceOfSp
+
+  console.log(bammAddress, {apr})
+
+  return apr
 }
