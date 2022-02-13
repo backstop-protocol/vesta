@@ -65,3 +65,11 @@ dialog article::-webkit-scrollbar {
     width: 0 !important;
     display: none; 
 }
+
+/* fix */
+[data-tooltip] {
+  position: unset;
+}
+[data-tooltip]:hover {
+  position: relative;
+}
