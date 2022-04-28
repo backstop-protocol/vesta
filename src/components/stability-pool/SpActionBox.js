@@ -290,7 +290,8 @@ class SpActionBox extends Component {
 
   render() {
     const {asset, userShareInUsd, walletBalance, tvl, footerIsOpen, action, openFooter, closeFooter, reward, config, collaterals, apr} = this.props.store
-    const { collateralName, platformName } = config
+    let { collateralName, description } = config
+    description = description || collateralName + " stability pool"
     const onMobile = isMobile()
     return (
     <article>
@@ -302,7 +303,7 @@ class SpActionBox extends Component {
             </MainAssetIcon>
             <Flex column alignCenter={onMobile}>
             <strong>{asset}</strong>
-            {collateralName && <small>{collateralName} stability pool</small>}
+            {description && <small>{description}</small>}
             </Flex>
             {onMobile &&  <div style={{width: "76px"}}></div>}
           </Flex>

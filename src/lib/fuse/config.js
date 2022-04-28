@@ -9,7 +9,7 @@ const poolsByChain = {
       tokenAddress: "0x0000000000000000000000000000000000000000",
       tokenName: "ETH",
       collateralName: "Rari",
-      platformName: "Pickle Fuse Rari Something",
+      description: "Rari stability pool 44",
       decimals: 18,
       lensAddress: "0x539a3f6d1F33C77c83e9b159e23E99FD8C26e7D9",
       rewardAddress: "0x965772e0E9c84b6f359c8597C891108DcF1c5B1A",
