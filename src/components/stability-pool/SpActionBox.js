@@ -93,12 +93,15 @@ const Unlock = observer(({grantAllowance, hasAllowance, allowanceInProgress, ass
   )
 })
 
+const isErc20 = symbol => ["ETH"].indexOf(symbol) == -1
+
 const SpFooterContent = observer((props) => {
   const {footerIsOpen, txInProgress, action, err, inputErrMsg, inputIsValid, inputIsInvalid, hash, walletBalance, closeFooter, asset, onInputChange, val, collaterals, withdrawValues} = props.store
   const {grantAllowance, hasAllowance, allowanceInProgress, collPercnet, usdPercnet } = props.store
   let doAction = action === "Deposit" ? props.store.deposit : props.store.withdraw
   const singleWithdrawValue = parseFloat(collPercnet) < 0.01
   const onMobile = isMobile()
+  const allowanceNeeded = action == "Deposit" && isErc20(asset)
   return (
     <div>
       <Close onClick={()=>closeFooter()}/>
@@ -124,7 +127,7 @@ const SpFooterContent = observer((props) => {
                 disabled={inputIsInvalid} 
                 onClick={()=> doAction(val)}>{action}</button>}
 
-            {action == "Deposit" && <Unlock {...{grantAllowance, hasAllowance, allowanceInProgress, asset, action}} />}
+            {allowanceNeeded && <Unlock {...{grantAllowance, hasAllowance, allowanceInProgress, asset, action}} />}
           </div>
         </div>
         {action == "Deposit" && <div>

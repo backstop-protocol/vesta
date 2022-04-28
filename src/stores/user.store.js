@@ -5,6 +5,7 @@ import React from "react";
 import { runInAction, makeAutoObservable } from "mobx"
 import EventBus from "../lib/EventBus"
 import vestaStore from "./vesta.store"
+import fuseStore from "./fuse.store"
 import {walletTypes, getMetaMask, getWalletConnect} from "../wallets/Wallets"
 
 const chainIdMap = {
@@ -130,7 +131,9 @@ class UserStore {
         }
         this.networkType = networkType
         this.user = user
-        vestaStore.onUserConnect()
+        fuseStore.onUserConnect()
+        // TODO: connect vesta
+        //vestaStore.onUserConnect()
         runInAction(()=> {
             this.loggedIn = true
             this.displayConnect = false

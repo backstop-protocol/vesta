@@ -1,14 +1,7 @@
 // TODO add support for platform name, link, docs,
 
 const poolsByChain = {
-  // "kovan": [
-  //   {
-  //     poolAddress: "0xEcF1b3903D8596b3B78AD624e88C65829D78b7a4", 
-  //     tokenAddress: "0x6FA3b05777dae34e95FaFd4852FF5D89c0cECF18", 
-  //     tokenName: "LUSD",
-  //     decimals: 7
-  //   }
-  // ],
+
   "Arbitrum Testnet": [
     {
       poolAddress: "0xd09a277D75Ce0fA4C76ACaE5423876cD85c9f9f0",
