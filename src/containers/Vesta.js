@@ -32,7 +32,7 @@ class Vesta extends Component {
               loading...
             </div>}
             {!loading && fuseStore.stabilityPools.map((sp, i)=> <SpActionBox key={i} store={sp}/>)}
-            {/* {!loading && vestaStore.stabilityPools.map((sp, i)=> <SpActionBox key={i} store={sp}/>)} */}
+            {!loading && vestaStore.stabilityPools.map((sp, i)=> <SpActionBox key={i} store={sp}/>)}
           </div>
         </div>}
         {!hideInfoPage && <VestaInfoPage/>}

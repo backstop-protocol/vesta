@@ -132,8 +132,7 @@ class UserStore {
         this.networkType = networkType
         this.user = user
         fuseStore.onUserConnect()
-        // TODO: connect vesta
-        //vestaStore.onUserConnect()
+        vestaStore.onUserConnect()
         runInAction(()=> {
             this.loggedIn = true
             this.displayConnect = false

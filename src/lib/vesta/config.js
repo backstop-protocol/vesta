@@ -1,5 +1,3 @@
-// TODO add support for platform name, link, docs,
-
 const poolsByChain = {
 
   "Arbitrum Testnet": [

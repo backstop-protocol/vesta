@@ -3,7 +3,6 @@ import WhiteBgViewIcon from "../../assets/view-icon.svg";
 import BlacBgViewIcon from "../../assets/view-icon-opeq-bg.svg";
 import userStore from "../../stores/user.store"
 
-// TODO: userStore.scannerUrl
 export default function View(props) {
   const {hash} = props
   const {blockExplorer} = userStore

@@ -278,7 +278,7 @@ export const getAssetDistrobution = async({web3, poolAddress, user}, assetAddres
 }
 
 export const getCollaterals = async(context) => {
-  return [] // TODO:
+  return [] 
   const { web3, poolAddress } = context
   const { Contract } = web3.eth
   const bamm = new Contract(abi.bamm, poolAddress)
