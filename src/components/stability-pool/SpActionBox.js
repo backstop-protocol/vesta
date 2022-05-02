@@ -293,6 +293,15 @@ class SpActionBox extends Component {
     let { collateralName, description } = config
     description = description || collateralName + " stability pool"
     const onMobile = isMobile()
+    let totalApr = apr
+    if(typeof apr === "object") {
+      totalApr = apr.reduce((acc, o)=> acc + parseFloat(o.value), 0).toString()
+    }
+    let aprExplainer = "The APR is identical to vestafinance.xyz"
+    if(typeof apr === "object"){
+      aprExplainer = apr.reduce((acc, o)=> acc + o.name + ": " + parseFloat(o.value).toFixed(2) + "% + ", "")
+      aprExplainer = aprExplainer.slice(0, aprExplainer.length - 3)
+    }
     return (
     <article>
       <Flex className="fade-in" justifyBetween alignCenter wrap column={onMobile}>
@@ -310,14 +319,14 @@ class SpActionBox extends Component {
         </SpGridItem>
         <SpGridItem>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
-            <div>$<ANS val={userShareInUsd} decimals={2}/></div>
+            <div>$<ANS val={userShareInUsd} decimals={5}/></div>
             <small>Balance</small>
           </Flex>
         </SpGridItem>
         <SpGridItem>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
-            <div><ANS val={apr} decimals={2}/>%</div>
-            <div><small> APR</small> <TooltipIcon text={"The APR is identical to vestafinance.xyz"} /></div>
+            <div><ANS val={totalApr} decimals={2}/>%</div>
+            <div><small> APR</small> <TooltipIcon text={aprExplainer} /></div>
           </Flex>
         </SpGridItem>
         <SpGridItem>
