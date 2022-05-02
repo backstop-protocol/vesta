@@ -267,7 +267,6 @@ export const getCollaterals = async(context) => {
 }
 
 export const getReward = async({web3, user, lensAddress, poolAddress, rewardAddress}) => {
-  // todo fetch unclaimed reward
   if(!lensAddress){ 
     return null
   }

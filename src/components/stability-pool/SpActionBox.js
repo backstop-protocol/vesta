@@ -93,12 +93,18 @@ const Unlock = observer(({grantAllowance, hasAllowance, allowanceInProgress, ass
   )
 })
 
+const isErc20 = symbol => ["ETH"].indexOf(symbol) == -1
+
 const SpFooterContent = observer((props) => {
-  const {footerIsOpen, txInProgress, action, err, inputErrMsg, inputIsValid, inputIsInvalid, hash, walletBalance, closeFooter, asset, onInputChange, val, collaterals, withdrawValues} = props.store
+  const {footerIsOpen, txInProgress, action, err, inputErrMsg, inputIsValid, inputIsInvalid, hash, walletBalance, closeFooter, asset, onInputChange, val, collaterals, withdrawValues, config} = props.store
   const {grantAllowance, hasAllowance, allowanceInProgress, collPercnet, usdPercnet } = props.store
   let doAction = action === "Deposit" ? props.store.deposit : props.store.withdraw
   const singleWithdrawValue = parseFloat(collPercnet) < 0.01
   const onMobile = isMobile()
+  const allowanceNeeded = action == "Deposit" && isErc20(asset)
+  const {denominator} = config
+  const prefix = !denominator ? "$" : ""
+  const suffix = denominator ? denominator : ""
   return (
     <div>
       <Close onClick={()=>closeFooter()}/>
@@ -124,7 +130,7 @@ const SpFooterContent = observer((props) => {
                 disabled={inputIsInvalid} 
                 onClick={()=> doAction(val)}>{action}</button>}
 
-            {action == "Deposit" && <Unlock {...{grantAllowance, hasAllowance, allowanceInProgress, asset, action}} />}
+            {allowanceNeeded && <Unlock {...{grantAllowance, hasAllowance, allowanceInProgress, asset, action}} />}
           </div>
         </div>
         {action == "Deposit" && <div>
@@ -138,17 +144,17 @@ const SpFooterContent = observer((props) => {
         {action == "Withdraw" && <div>
           <div style={{padding: "var(--spacing) 0"}}>Current Withdraw Value{singleWithdrawValue ? ": " : "s:"}
           {singleWithdrawValue && <span>
-            $<ANS val={withdrawValues.usd} decimals={2}/>
+            {prefix} <ANS val={withdrawValues.usd} decimals={2}/> <strong>{suffix}</strong>
           </span>}
           </div>
           {!singleWithdrawValue && <div className="grid">
             <p>
               <small> {usdPercnet}% in <strong>{asset}</strong></small> <br/>
-              $<ANS val={withdrawValues.usd} decimals={2}/>
+              {prefix} <ANS val={withdrawValues.usd} decimals={2}/> <strong>{suffix}</strong>
             </p>
             <p>
               <small> {collPercnet}% in collateral ({collaterals.map(coll => <strong>{coll.symbol} </strong>)})</small> <br/>
-              $<ANS val={withdrawValues.coll} decimals={4}/><br/>
+              {prefix} <ANS val={withdrawValues.coll} decimals={4}/><br/> <strong>{suffix}</strong>
             </p>
           </div>}
         </div>}
@@ -287,8 +293,21 @@ class SpActionBox extends Component {
 
   render() {
     const {asset, userShareInUsd, walletBalance, tvl, footerIsOpen, action, openFooter, closeFooter, reward, config, collaterals, apr} = this.props.store
-    const { collateralName, platformName } = config
+    let { collateralName, description } = config
+    description = description || collateralName + " stability pool"
     const onMobile = isMobile()
+    let totalApr = apr
+    if(typeof apr === "object") {
+      totalApr = apr.reduce((acc, o)=> acc + parseFloat(o.value), 0).toString()
+    }
+    let aprExplainer = "The APR is identical to vestafinance.xyz"
+    if(typeof apr === "object"){
+      aprExplainer = apr.reduce((acc, o)=> acc + o.name + ": " + parseFloat(o.value).toFixed(2) + "% + ", "")
+      aprExplainer = aprExplainer.slice(0, aprExplainer.length - 3)
+    }
+    const {denominator} = config
+    const prefix = !denominator ? "$" : ""
+    const suffix = denominator ? denominator : ""
     return (
     <article>
       <Flex className="fade-in" justifyBetween alignCenter wrap column={onMobile}>
@@ -299,21 +318,21 @@ class SpActionBox extends Component {
             </MainAssetIcon>
             <Flex column alignCenter={onMobile}>
             <strong>{asset}</strong>
-            {collateralName && <small>{collateralName} stability pool</small>}
+            {description && <small>{description}</small>}
             </Flex>
             {onMobile &&  <div style={{width: "76px"}}></div>}
           </Flex>
         </SpGridItem>
         <SpGridItem>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
-            <div>$<ANS val={userShareInUsd} decimals={2}/></div>
+            <div>{prefix} <ANS val={userShareInUsd} decimals={5}/> <strong>{suffix}</strong></div>
             <small>Balance</small>
           </Flex>
         </SpGridItem>
         <SpGridItem>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
-            <div><ANS val={apr} decimals={2}/>%</div>
-            <div><small> APR</small> <TooltipIcon text={"The APR is identical to vestafinance.xyz"} /></div>
+            <div><ANS val={totalApr} decimals={2}/>%</div>
+            <div><small> APR</small> <TooltipIcon text={aprExplainer} /></div>
           </Flex>
         </SpGridItem>
         <SpGridItem>
