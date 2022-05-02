@@ -170,11 +170,9 @@ class PoolStore {
       const context = this.getContext()
       const tx = Interface.deposit(context, amount)
       let sendETH = 0
-      debugger
       if (Interface.isETH(context.tokenAddress)) {
         sendETH = Interface.denormlize(amount, this.decimals)
       }
-      debugger
       await ApiAction(tx, user, web3, sendETH, this.onHash)
       runInAction(()=> {
         this.success = true
@@ -286,36 +284,12 @@ class PoolStore {
       const aprPromise = Interface.getApr(context)
         .catch(err => console.error(`failed to fetch APR: ${err.message} @ ${err.stack}`)) // will not block
       
-      const tvlPromise = Interface.getTvl(context).catch(err =>{
-        debugger
-        console.error("==== err:")
-        console.error(err)
-      })
-      const walletBalancePromise = Interface.getWalletBallance(context).catch(err =>{
-        debugger
-        console.error("==== err:")
-        console.error(err)
-      })
-      const allowancePromise = Interface.getAllowance(context).catch(err =>{
-        debugger
-        console.error("==== err:")
-        console.error(err)
-      })
-      const userShareInUsdPromise = Interface.getUserShareInUsd(context).catch(err =>{
-        debugger
-        console.error("==== err:")
-        console.error(err)
-      })
-      const collateralsPromise = Interface.getCollaterals(context).catch(err =>{
-        debugger
-        console.error("==== err:")
-        console.error(err)
-      })
-      const rewardPromise = Interface.getReward(context).catch(err =>{
-        debugger
-        console.error("==== err:")
-        console.error(err)
-      })
+      const tvlPromise = Interface.getTvl(context)
+      const walletBalancePromise = Interface.getWalletBallance(context)
+      const allowancePromise = Interface.getAllowance(context)
+      const userShareInUsdPromise = Interface.getUserShareInUsd(context)
+      const collateralsPromise = Interface.getCollaterals(context)
+      const rewardPromise = Interface.getReward(context)
       // fetching in  parallel
       const [walletBalance, {tvl, usdRatio, collRatio}, allowance, userShareInUsd, collaterals, reward, apr] = await Promise.all([
         walletBalancePromise, 
@@ -330,7 +304,6 @@ class PoolStore {
       const uiUpdate = () => {
         runInAction(()=> {
           this.walletBalance = stringToFixed(Interface.normlize(walletBalance, this.decimals), 5)
-          debugger
           this.tvl = Interface.normlize(tvl, this.decimals)
           this.allowance = allowance
           this.userShareInUsd = stringToFixed(Interface.normlize(userShareInUsd, this.decimals), 5)
