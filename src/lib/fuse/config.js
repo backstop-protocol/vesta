@@ -6,6 +6,7 @@ const poolsByChain = {
     {
       poolAddress: "0x51fBf83818e4Fa195fD5D395a63fCfB5C45d9565",
       tokenAddress: "0x0000000000000000000000000000000000000000",
+      denominator: "ETH",
       tokenName: "ETH",
       collateralName: "Rari",
       description: "Rari stability pool 44",

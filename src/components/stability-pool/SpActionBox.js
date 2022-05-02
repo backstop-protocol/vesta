@@ -96,12 +96,15 @@ const Unlock = observer(({grantAllowance, hasAllowance, allowanceInProgress, ass
 const isErc20 = symbol => ["ETH"].indexOf(symbol) == -1
 
 const SpFooterContent = observer((props) => {
-  const {footerIsOpen, txInProgress, action, err, inputErrMsg, inputIsValid, inputIsInvalid, hash, walletBalance, closeFooter, asset, onInputChange, val, collaterals, withdrawValues} = props.store
+  const {footerIsOpen, txInProgress, action, err, inputErrMsg, inputIsValid, inputIsInvalid, hash, walletBalance, closeFooter, asset, onInputChange, val, collaterals, withdrawValues, config} = props.store
   const {grantAllowance, hasAllowance, allowanceInProgress, collPercnet, usdPercnet } = props.store
   let doAction = action === "Deposit" ? props.store.deposit : props.store.withdraw
   const singleWithdrawValue = parseFloat(collPercnet) < 0.01
   const onMobile = isMobile()
   const allowanceNeeded = action == "Deposit" && isErc20(asset)
+  const {denominator} = config
+  const prefix = !denominator ? "$" : ""
+  const suffix = denominator ? denominator : ""
   return (
     <div>
       <Close onClick={()=>closeFooter()}/>
@@ -141,17 +144,17 @@ const SpFooterContent = observer((props) => {
         {action == "Withdraw" && <div>
           <div style={{padding: "var(--spacing) 0"}}>Current Withdraw Value{singleWithdrawValue ? ": " : "s:"}
           {singleWithdrawValue && <span>
-            $<ANS val={withdrawValues.usd} decimals={2}/>
+            {prefix} <ANS val={withdrawValues.usd} decimals={2}/> <strong>{suffix}</strong>
           </span>}
           </div>
           {!singleWithdrawValue && <div className="grid">
             <p>
               <small> {usdPercnet}% in <strong>{asset}</strong></small> <br/>
-              $<ANS val={withdrawValues.usd} decimals={2}/>
+              {prefix} <ANS val={withdrawValues.usd} decimals={2}/> <strong>{suffix}</strong>
             </p>
             <p>
               <small> {collPercnet}% in collateral ({collaterals.map(coll => <strong>{coll.symbol} </strong>)})</small> <br/>
-              $<ANS val={withdrawValues.coll} decimals={4}/><br/>
+              {prefix} <ANS val={withdrawValues.coll} decimals={4}/><br/> <strong>{suffix}</strong>
             </p>
           </div>}
         </div>}
@@ -302,6 +305,9 @@ class SpActionBox extends Component {
       aprExplainer = apr.reduce((acc, o)=> acc + o.name + ": " + parseFloat(o.value).toFixed(2) + "% + ", "")
       aprExplainer = aprExplainer.slice(0, aprExplainer.length - 3)
     }
+    const {denominator} = config
+    const prefix = !denominator ? "$" : ""
+    const suffix = denominator ? denominator : ""
     return (
     <article>
       <Flex className="fade-in" justifyBetween alignCenter wrap column={onMobile}>
@@ -319,7 +325,7 @@ class SpActionBox extends Component {
         </SpGridItem>
         <SpGridItem>
           <Flex column alignCenter justifyBetween style={{padding: "0 --spacing"}}>
-            <div>$<ANS val={userShareInUsd} decimals={5}/></div>
+            <div>{prefix} <ANS val={userShareInUsd} decimals={5}/> <strong>{suffix}</strong></div>
             <small>Balance</small>
           </Flex>
         </SpGridItem>
