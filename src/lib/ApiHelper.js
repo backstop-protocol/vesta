@@ -7,7 +7,6 @@ function increaseABit(number) {
 }
 
 function validateTx(tx) {
-    debugger
     tx.arguments.forEach(arg => {
         if(!arg || arg === "0x0000000000000000000000000000000000000000"){
             const msg = "one of the TX arguments is falsy or invalid and might send ETH to an invalid account"
