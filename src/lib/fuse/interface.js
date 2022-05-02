@@ -1,11 +1,11 @@
 import Web3 from "web3"
 import { abi } from "./abi"
 import axios from "axios"
-const {toBN, BN} = Web3.utils
+const {toBN, BN, fromWei, toWei} = Web3.utils
 
 const maxAllowance = new BN("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 16)
 export const isETH = (tokenAddress) => tokenAddress === "0x0000000000000000000000000000000000000000"
-
+const _1e18 = toBN('10').pow(toBN('18'))
 
 export const normlize = (n, decimals) => {
   let wei = toBN(n); // eslint-disable-line
@@ -86,7 +86,6 @@ export const getDecimals = ({web3, tokenAddress}) => {
 }
 
 export const getAllowance = async ({web3, user, tokenAddress, poolAddress}) => {
-  debugger
   if(isETH(tokenAddress)){
     return maxAllowance.toString()
   }
@@ -115,7 +114,6 @@ export const getWalletBallance = async ({web3, user, tokenAddress}) => {
 }
 
 export const deposit = (context, amount) => {
-  debugger
   const {web3, wrapperAddress, decimals, tokenAddress} = context
   if(isETH(tokenAddress)){
     return depositEth(context)
@@ -127,7 +125,6 @@ export const deposit = (context, amount) => {
 }
 
 const depositEth = ({web3, wrapperAddress}) => {
-  debugger
   const { Contract } = web3.eth
   const bammWrapper = new Contract(abi.wrapper, wrapperAddress)
   return bammWrapper.methods.deposit()
@@ -160,13 +157,13 @@ const getUserInfo = async (context) => {
 
 export const getTvl = async(context) => {
   try{
-    const { web3, poolAddress, tokenAddress } = context
+    const { web3, bammAddress, tokenAddress } = context
     const { Contract } = web3.eth
-    // const bamm = new Contract(abi.bamm, poolAddress)
+    const bamm = new Contract(abi.bamm, bammAddress)
   
     const [{amount: tokenValue}, {succ: success, value: collateralValue}] = await Promise.all([
       getUserInfo(context),
-      {succ: true, value: 0} // TODO: calc collateral value
+      bamm.methods.getCollateralValue().call()
     ])
     
     if(!success){
@@ -192,32 +189,45 @@ export const getTvl = async(context) => {
   }
 }
 
-const getUserShareAndTotalSupply = async(web3, userAddress, poolAddress) => {
-  throw new Error(`function  not yet implemented`)
+const getApy = (rate) => {
+  // Calculating the APY Using Rate Per Block
+  // https://compound.finance/docs#protocol-math
+  const blockIntrest = parseFloat(fromWei(rate))
+  const blocksPerDay = 6570 // based on 4 blocks occurring every minute
+  const daysPerYear = 365
 
-  const { Contract } = web3.eth
-  const bamm = new Contract(abi.bamm, poolAddress)
-  const userSharePromise = bamm.methods.balanceOf(userAddress).call()
-  const totalSupplyPromise = bamm.methods.totalSupply().call()
-
-  const [userShare, totalSupply] = await Promise.all([
-    userSharePromise,
-    totalSupplyPromise
-  ])
-  return {userShare, totalSupply}
+  const APY = ((((blockIntrest * blocksPerDay + 1) ** daysPerYear - 1))) * 100
+  return APY.toString()
 }
 
-export const usdToShare = async (context, amount) => {
-  throw new Error(`function  not yet implemented`)
-
-  const {web3, poolAddress, tokenAddress, decimals} = context
-  // amount * totalSupply / TVL
+const getUserShareInEth = async(context, share) => {
+  const {web3, userAddress, bammAddress, masterChefAddress, wrapperAddress} = context
   const { Contract } = web3.eth
-  const bamm = new Contract(abi.bamm, poolAddress)
-  const totalSupplyPromise = bamm.methods.totalSupply().call()
-  const tvlPromise = getTvl(context)
-  const [{tvl}, totalSupply] = await Promise.all([tvlPromise, totalSupplyPromise])
-  const share = (toBN(denormlize(amount, decimals)).mul(toBN(totalSupply))).div(toBN(tvl))
+  const bamm = new Contract(abi.bamm, bammAddress)
+  const wrapper = new Contract(abi.wrapper, wrapperAddress)
+  const fEthAddress = await wrapper.methods.fETH().call()
+  const fETH = new Contract(abi.cToken, fEthAddress)
+  
+  const bammBal = await fETH.methods.balanceOf(bammAddress).call()
+  const { value: bammCollBal, succ} = await bamm.methods.getCollateralValue().call()
+  if(!succ){
+    throw new Error("failed to get bamb collateral value")
+  }
+  const bammTotal = toBN(bammBal).add(toBN(bammCollBal))
+  const bfEthAddress = await wrapper.methods.bfETH().call()
+  const bfETH = new Contract(abi.erc20, bfEthAddress)
+  const bfEthTotalSupply = await bfETH.methods.totalSupply().call() 
+  const userFETHBal = toBN(bammTotal).mul(toBN(share)).div(toBN(bfEthTotalSupply)).toString()
+  const fEth2EthExchangeRate = await fETH.methods.exchangeRateStored().call()
+  const userShare = (toBN(userFETHBal).mul(toBN(fEth2EthExchangeRate))).div(_1e18)
+  return userShare
+}
+
+export const usdToShare = async (context, withdrawAmount) => {
+  const {decimals} = context
+  const {amount: bammShare} = await getUserInfo(context)
+  const depositEthAmount = await getUserShareInEth(context, bammShare)
+  const share = toBN(denormlize(withdrawAmount, decimals)).mul(toBN(bammShare)).div(depositEthAmount)
   return share.toString()
 }
 
@@ -229,21 +239,9 @@ export const withdraw = ({web3, wrapperAddress}, amountInShares) => {
 }
 
 export const getUserShareInUsd = async(context) => {
-  return "0" // TODO
-  const {web3, user, poolAddress} = context
-  // tvl * userShare / totalSupply
-  const tvlPromise = getTvl(context)
-  const sharePromise = getUserShareAndTotalSupply(web3, user, poolAddress)
-  const [{tvl}, {userShare, totalSupply}] = await Promise.all([tvlPromise, sharePromise])
-  
-  let usdVal;
-  if(totalSupply == "0"){
-    usdVal = "0"
-  } else {
-    usdVal = (toBN(tvl).mul(toBN(userShare))).div(toBN(totalSupply)).toString()
-  }
-  
-  return usdVal
+  const {amount: bammShare} = await getUserInfo(context)
+  const usdVal = await getUserShareInEth(context, bammShare)
+  return usdVal.toString()
 }
 
 export const getSymbol = (web3, tokenAddress) => {
@@ -319,7 +317,6 @@ export const getReward = async(context) => {
 }
 
 export const claimReward = async (context) => {
-  debugger
   const {web3, wrapper}  = context
   const { Contract } = web3.eth
   const bammWrapper = new Contract(abi.wrapper, wrapper)
@@ -327,35 +324,39 @@ export const claimReward = async (context) => {
   return bammWrapper.methods.withdraw("0")
 }
 
-export const getApr = async ({poolAddress: bammAddress, tokenAddress: vstTokenAddress, web3}) => {
-  return '7.7'
-  throw new Error(`function  not yet implemented`)
-
-  // get vesta price
+export const getApr = async (context) => {
+  const {web3, wrapperAddress, bammAddress, masterChefAddress, masterChefPID} = context
   const { Contract } = web3.eth
-  const response = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=vesta-finance&vs_currencies=USD")
-  const vestaPrice = Number(response.data["vesta-finance"]["usd"])
 
-  const bammContract = new Contract(abi.bamm, bammAddress)
+  const masterChef = new Contract(abi.masterChef, masterChefAddress)
+  const bamm = new Contract(abi.bamm, bammAddress)
+  const bammWrapper = new Contract(abi.wrapper, wrapperAddress)
+  const fEthAddress = await bammWrapper.methods.fETH().call()
+  const fETH = new Contract(abi.cToken, fEthAddress)
+  const supplyRatePerBlock = await fETH.methods.supplyRatePerBlock().call()
+  const lendingAPY = getApy(supplyRatePerBlock)
+  // masterChef pickle reward
   
-  const stabilityPoolAddress = await bammContract.methods.SP().call()
-  const stabilityPoolContract = new Contract(abi.stabilityPool, stabilityPoolAddress)
+  const bammShare = await bamm.methods.balanceOf(masterChefAddress).call()
+  const totalBammInEth = await getUserShareInEth(context, bammShare) 
+  const totalAllocPoint = await masterChef.methods.totalAllocPoint().call()
+  
+  const {allocPoint} = await masterChef.methods.poolInfo(masterChefPID).call()
+  
+  const picklePerSecond = await masterChef.methods.picklePerSecond().call()
+  const picklePriceInEth = (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=pickle-finance&vs_currencies=ETH')).data["pickle-finance"].eth.toString()
+  const pickleApy = toBN(allocPoint).mul(toBN(picklePerSecond)).div(toBN(totalAllocPoint)).mul(toBN((365 * 24 * 60 * 60).toString()))
+  const picklApyInEth = pickleApy.mul(toBN(toWei(picklePriceInEth))).div(_1e18)
+  const pickleApyForPool = parseInt((toBN(picklApyInEth).mul(toBN("10000")).div(toBN(totalBammInEth))).toString()) / 100
 
-  const communityIssuanceAddress = await stabilityPoolContract.methods.communityIssuance().call()
-  const communityIssuanceContract = new Contract(abi.communityIssuance, communityIssuanceAddress)  
-
-  const vestaPerMinute = Number(web3.utils.fromWei(await communityIssuanceContract.methods.vstaDistributionsByPool(stabilityPoolAddress).call()))
-  const minutesPerYear = 365 * 24 * 60
-  const vestaPerYearInUSD = vestaPerMinute * minutesPerYear * vestaPrice
-
-  const vstContract = new Contract(abi.erc20, vstTokenAddress)
-  const balanceOfSp = Number(web3.utils.fromWei(await vstContract.methods.balanceOf(stabilityPoolAddress).call()))
-
-  //console.log({vestaPerYearInUSD}, {balanceOfSp}, {vestaPrice}, {minutesPerYear}, {vestaPerMinute})
-
-  const apr = vestaPerYearInUSD * 100 / balanceOfSp
-
-  console.log(bammAddress, {apr})
-
-  return apr
+  // rari pool admin fee
+  const borrowRatePerBlock = toWei(parseFloat(getApy(await fETH.methods.borrowRatePerBlock().call())).toFixed(18))
+  const adminFeeMantissa = await fETH.methods.adminFeeMantissa().call()
+  const adminFee = fromWei((toBN(borrowRatePerBlock).mul(toBN(adminFeeMantissa))).div(_1e18))
+  
+  return [
+    { name: "Rari APY", value: lendingAPY },
+    { name: "Rari admin fees", value: adminFee },
+    { name: "Pickle Reward", value: pickleApyForPool}
+  ]
 }
