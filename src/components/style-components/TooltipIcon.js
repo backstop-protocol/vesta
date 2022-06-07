@@ -10,7 +10,7 @@ return (
       border: "1.5px solid var(--contrast)",
       borderRadius: "50%"
     }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19 19">
-        <g fill="none" fill-rule="evenodd">
+        <g fill="none" fillRule="evenodd">
             <g fill="var(--contrast-inverse)">
                 <g>
                     <path d="M9.45 0c2.61 0 4.972 1.058 6.682 2.768C17.842 4.478 18.9 6.84 18.9 9.45c0 2.61-1.058 4.972-2.768 6.682-1.71 1.71-4.073 2.768-6.682 2.768-2.61 0-4.972-1.058-6.682-2.768C1.058 14.422 0 12.06 0 9.45c0-2.61 1.058-4.972 2.768-6.682C4.478 1.058 6.84 0 9.45 0" opacity=".25" transform="translate(-863 -212) translate(863 212)"/>
