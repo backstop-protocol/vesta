@@ -59,7 +59,7 @@ export default function ModalClaimHeader(props) {
         </radialGradient>
         <path id="3ea9kj8bca" d="M5.968 1h544.484c2.744 0 4.968 2.224 4.968 4.968V125H1V5.968C1 3.224 3.224 1 5.968 1z"/>
     </defs>
-    <g fill="none" fill-rule="evenodd">
+    <g fill="none" fillRule="evenodd">
         <g>
             <g>
                 <g transform="translate(-522 -238) translate(522 239)">
