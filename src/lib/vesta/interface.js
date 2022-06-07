@@ -271,29 +271,48 @@ export const getReward = async({web3, user, lensAddress, poolAddress, rewardAddr
   if(!lensAddress){ 
     return null
   }
+
   const { Contract } = web3.eth
   const lens = new Contract(abi.lens, lensAddress)
   const erc20 = new Contract(abi.erc20, rewardAddress)
-  const [reward, symbol, decimal, balance] = await Promise.all([
+  let [reward, symbol, decimal, balance] = await Promise.all([
     lens.methods.getUnclaimedLqty(user, poolAddress, rewardAddress).call(),
     getSymbol(web3, rewardAddress),
     getDecimals({web3, tokenAddress: rewardAddress}),
     erc20.methods.balanceOf(user).call()
   ])
+  balance = normlize(balance, decimal)
+  const unclaimed = normlize(reward, decimal)
 
-  return {
-    unclaimed: normlize(reward, decimal), 
-    symbol,
-    balance: normlize(balance, decimal), 
+  const rewardIsWrapped = symbol.indexOf('vw') > -1
+  if(rewardIsWrapped){
+    const wrapper = new Contract(abi.VW, rewardAddress)
+    const underlyingAddress = await wrapper.methods.underlying().call()
+    symbol = await getSymbol(web3, underlyingAddress)
+    decimal = await getDecimals({web3, tokenAddress: underlyingAddress})
+    const wrappedErc20 = new Contract(abi.erc20, underlyingAddress)
+    balance = await wrappedErc20.methods.balanceOf(user).call()
+    balance = normlize(balance, decimal)
   }
 
+  return {
+    unclaimed, 
+    symbol,
+    balance, 
+  }
 }
 
-export const getApr = async ({poolAddress: bammAddress, tokenAddress: vstTokenAddress, web3}) => {
+const coinGeckoIdMap = { 
+  "0x30EFbCA5507d8bC7AB33Cd4EfF5dCbe22a2E61A4": "gmx",
+  "0xfF6C71cE5B7E07D36cE850D35088518E9Af171F0": "dopex",
+  "0xa684cd057951541187f288294a1e1C2646aA2d24": "vesta-finance"
+}
+
+export const getApr = async ({poolAddress: bammAddress, tokenAddress: vstTokenAddress, web3, rewardAddress}) => {
   // get vesta price
   const { Contract } = web3.eth
-  const response = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=vesta-finance&vs_currencies=USD")
-  const vestaPrice = Number(response.data["vesta-finance"]["usd"])
+  const {data} = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${coinGeckoIdMap[rewardAddress]}&vs_currencies=USD`)
+  const rewardPrice = Number(Object.values(data)[0].usd || 0)
 
   const bammContract = new Contract(abi.bamm, bammAddress)
   
@@ -303,16 +322,16 @@ export const getApr = async ({poolAddress: bammAddress, tokenAddress: vstTokenAd
   const communityIssuanceAddress = await stabilityPoolContract.methods.communityIssuance().call()
   const communityIssuanceContract = new Contract(abi.communityIssuance, communityIssuanceAddress)  
 
-  const vestaPerMinute = Number(web3.utils.fromWei(await communityIssuanceContract.methods.vstaDistributionsByPool(stabilityPoolAddress).call()))
+  const rewardPerMinute = Number(web3.utils.fromWei(await communityIssuanceContract.methods.vstaDistributionsByPool(stabilityPoolAddress).call()))
   const minutesPerYear = 365 * 24 * 60
-  const vestaPerYearInUSD = vestaPerMinute * minutesPerYear * vestaPrice
+  const rewardPerYearInUSD = rewardPerMinute * minutesPerYear * rewardPrice
 
   const vstContract = new Contract(abi.erc20, vstTokenAddress)
   const balanceOfSp = Number(web3.utils.fromWei(await vstContract.methods.balanceOf(stabilityPoolAddress).call()))
 
   //console.log({vestaPerYearInUSD}, {balanceOfSp}, {vestaPrice}, {minutesPerYear}, {vestaPerMinute})
 
-  const apr = vestaPerYearInUSD * 100 / balanceOfSp
+  const apr = rewardPerYearInUSD * 100 / balanceOfSp
 
   console.log(bammAddress, {apr})
 
