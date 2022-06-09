@@ -147,7 +147,7 @@ const SpFooterContent = observer((props) => {
               $<ANS val={withdrawValues.usd} decimals={2}/>
             </p>
             <p>
-              <small> {collPercnet}% in collateral ({collaterals.map(coll => <strong>{coll.symbol} </strong>)})</small> <br/>
+              <small> {collPercnet}% in collateral ({collaterals.map((coll, i) => <strong key={i}>{coll.symbol} </strong>)})</small> <br/>
               $<ANS val={withdrawValues.coll} decimals={4}/><br/>
             </p>
           </div>}
