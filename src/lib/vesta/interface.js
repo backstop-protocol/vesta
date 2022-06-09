@@ -308,32 +308,7 @@ const coinGeckoIdMap = {
   "0xa684cd057951541187f288294a1e1C2646aA2d24": "vesta-finance"
 }
 
-export const getApr = async ({poolAddress: bammAddress, tokenAddress: vstTokenAddress, web3, rewardAddress}) => {
-  // get vesta price
-  const { Contract } = web3.eth
-  const {data} = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${coinGeckoIdMap[rewardAddress]}&vs_currencies=USD`)
-  const rewardPrice = Number(Object.values(data)[0].usd || 0)
-
-  const bammContract = new Contract(abi.bamm, bammAddress)
-  
-  const stabilityPoolAddress = await bammContract.methods.SP().call()
-  const stabilityPoolContract = new Contract(abi.stabilityPool, stabilityPoolAddress)
-
-  const communityIssuanceAddress = await stabilityPoolContract.methods.communityIssuance().call()
-  const communityIssuanceContract = new Contract(abi.communityIssuance, communityIssuanceAddress)  
-
-  const rewardPerMinute = Number(web3.utils.fromWei(await communityIssuanceContract.methods.vstaDistributionsByPool(stabilityPoolAddress).call()))
-  const minutesPerYear = 365 * 24 * 60
-  const rewardPerYearInUSD = rewardPerMinute * minutesPerYear * rewardPrice
-
-  const vstContract = new Contract(abi.erc20, vstTokenAddress)
-  const balanceOfSp = Number(web3.utils.fromWei(await vstContract.methods.balanceOf(stabilityPoolAddress).call()))
-
-  //console.log({vestaPerYearInUSD}, {balanceOfSp}, {vestaPrice}, {minutesPerYear}, {vestaPerMinute})
-
-  const apr = rewardPerYearInUSD * 100 / balanceOfSp
-
-  console.log(bammAddress, {apr})
-
-  return apr
+export const getApr = async ({collateralName}) => {
+  const {data} = await axios.get(`https://vestafinance.xyz/api/stability-pool-apy?asset=${collateralName.toLowerCase()}`)    
+  return data * 100
 }
