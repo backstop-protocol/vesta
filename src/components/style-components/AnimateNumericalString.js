@@ -34,7 +34,7 @@ export default class AnimateNumericalString extends Component{
                 config={{duration}}
                 from={{ number: this.state.from }}
                 to={{ number: this.state.to }}>
-                {({number}) => <animated.span>{number.interpolate(x=> truncateToDecimals(parseFloat(x)), decimals)}</animated.span>}
+                {({number}) => <animated.span>{number.interpolate(x=> truncateToDecimals(parseFloat(x), decimals))}</animated.span>}
             </Spring>
         )
     }
