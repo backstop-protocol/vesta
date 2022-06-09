@@ -310,5 +310,5 @@ const coinGeckoIdMap = {
 
 export const getApr = async ({collateralName}) => {
   const {data} = await axios.get(`https://vestafinance.xyz/api/stability-pool-apy?asset=${collateralName.toLowerCase()}`)    
-  return data * 100
+  return Number(data) * 100
 }
