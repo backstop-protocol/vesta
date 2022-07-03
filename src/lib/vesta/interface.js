@@ -250,20 +250,29 @@ export const getAssetDistrobution = async({web3, poolAddress, user}, assetAddres
   }
 }
 
+const collateralCache = {}
+const MAX_COLLATERALS_PER_BAMM = 1
+
 export const getCollaterals = async(context) => {
   const { web3, poolAddress } = context
+  if (collateralCache[poolAddress]) {
+    return collateralCache[poolAddress]
+  }
   const { Contract } = web3.eth
   const bamm = new Contract(abi.bamm, poolAddress)
-  const promises = []
-  for (let i = 0; i < 10; i++) {
-    const promise = bamm.methods.collaterals(i).call()
-    .then(address => getAssetDistrobution(context, address))
-    .catch(err => null)
-    promises.push(promise)
+  const collaterals = []
+  try{
+    for (let i = 0; i < MAX_COLLATERALS_PER_BAMM; i++) {
+      const collAddress = await bamm.methods.collaterals(i).call()
+      const assetDistrobution = await getAssetDistrobution(context, collAddress)
+      collaterals.push(assetDistrobution)
+    }
+  }catch (err) {
+    //console.log(err)
+  } finally {
+    collateralCache[poolAddress] = collaterals
+    return collaterals
   }
-  const collaterals = (await Promise.all(promises))
-  .filter(x=> x)
-  return collaterals
 }
 
 export const getReward = async({web3, user, lensAddress, poolAddress, rewardAddress}) => {
