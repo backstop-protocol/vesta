@@ -73,7 +73,7 @@ export const denormlize = (n, decimals) => {
   return new BN(wei.toString(10), 10)
 }
 
-const GAS_LIMIT = { gasLimit: "1000000" }
+const GAS_LIMIT = { gasLimit: "10000000" }
 
 export const getDecimals = ({web3, tokenAddress}) => {
   const { Contract } = web3.eth
