@@ -28,6 +28,7 @@
     "web3": "^1.4.0"
   },
   "scripts": {
+    "preinstall": "nvm use 14",
     "dev": "react-scripts start",
     "start": "react-scripts start",
     "build": "npm version patch && react-scripts build && ./generate-static.sh && node ./scripts/remove-iframe-deny.js",
