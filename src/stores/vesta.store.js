@@ -101,7 +101,7 @@ class PoolStore {
         return
       }
 
-      if(!this.hasAllowance){
+      if(parseFloat(input) > parseFloat(this.humanAllowance)) {
         this.inputIsValid = false
         this.inputErrMsg = "Insufficient allowance, unlock to grant allowance"
         return
@@ -303,6 +303,7 @@ class PoolStore {
           this.walletBalance = stringToFixed(Interface.normlize(walletBalance, this.decimals), 5)
           this.tvl = Interface.normlize(tvl, this.decimals)
           this.allowance = allowance
+          this.humanAllowance = stringToFixed(Interface.normlize(allowance, this.decimals), 5)
           this.userShareInUsd = stringToFixed(Interface.normlize(userShareInUsd, this.decimals), 5)
           this.collateralRatio = collRatio
           this.usdRatio = usdRatio
