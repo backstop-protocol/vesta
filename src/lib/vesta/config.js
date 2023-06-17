@@ -71,17 +71,7 @@ const poolsByChain = {
       decimals: 18,
       lensAddress: "0x539a3f6d1F33C77c83e9b159e23E99FD8C26e7D9",
       rewardAddress: "0xa684cd057951541187f288294a1e1C2646aA2d24",
-    },
-    {
-      poolAddress: "0xb54f98976B40CDAccFc4958Fc9C0f6955d52521e",
-      tokenAddress: "0x64343594Ab9b56e99087BfA6F2335Db24c2d1F17",
-      tokenName: "VST",
-      collateralName: "DPX",
-      platformName: "Vesta",
-      decimals: 18,
-      lensAddress: "0x539a3f6d1F33C77c83e9b159e23E99FD8C26e7D9",
-      rewardAddress: "0xfF6C71cE5B7E07D36cE850D35088518E9Af171F0",
-    },    
+    },  
     {
       poolAddress: "0xC57120368a86FB33c5F89f8a698909D1E97e501f",
       tokenAddress: "0x64343594Ab9b56e99087BfA6F2335Db24c2d1F17",
